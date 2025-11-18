@@ -30,3 +30,11 @@ export interface RegisterResponse {
     role: string;
 }
 
+//ข้อมูลผู้ใช้งานหลัง login
+export interface Me {
+    id: number;
+    username: string;
+    fullname: string;
+    phone: string;
+    role: string;
+}
