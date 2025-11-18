@@ -11,6 +11,7 @@ const routes = [
     name: "Index",
     redirect: { name: "LoginView" },
   },
+  // Login View
   {
     path: "/login",
     name: "LoginView",
@@ -19,6 +20,16 @@ const routes = [
     },
     component: () => import("../views/LoginView.vue"),
   },
+  // Product View
+  {
+    path:'/products',
+    name:'ProductView',
+    meta:{
+      title:'รายการสินค้า'
+  },
+    component: () => import("../views/ProductView.vue"),
+  },
+  
 ];
 
 const router = createRouter({
