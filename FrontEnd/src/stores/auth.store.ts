@@ -50,7 +50,7 @@ export const authStore = defineStore("auth", {
   },
 });
 
-const fetchUser = async () => {
+export const fetchUser = async () => {
     const auth = authStore();
 
     try{

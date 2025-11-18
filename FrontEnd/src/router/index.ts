@@ -6,20 +6,24 @@ import {
 } from "vue-router";
 
 const routes = [
-  {
-    path: "/",
-    name: "Index",
-    redirect: { name: "LoginView" },
+ {
+    path: '/',
+    component: () => import('../layouts/AuthLayout.vue'),
+    children: [
+      {
+        path: '',
+        redirect: { name: 'LoginView' },
+      },
+      {
+        path: 'login',
+        name: 'LoginView',
+        meta: { title: 'เข้าสู่ระบบ' },
+        component: () => import('../views/LoginView.vue'),
+      },
+    ],
   },
-  // Login View
-  {
-    path: "/login",
-    name: "LoginView",
-    meta: {
-      title: "เข้าสู่ระบบ",
-    },
-    component: () => import("../views/LoginView.vue"),
-  },
+
+  
   // Product View
   {
     path:'/products',
