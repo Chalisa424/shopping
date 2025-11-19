@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import router from "../router";
-
 import type { Me, LoginRequest } from "../models/auth.model";
 import { login, getMe } from "../services/auth.service";
+import { jwtDecode } from "jwt-decode";
 
 interface AuthState {
   user?: Me;
@@ -20,10 +20,26 @@ export const authStore = defineStore("auth", {
       try {
         //เรียก api login
         const res = await login(payload);
-        //เก็บ token ลง localstorage
-        localStorage.setItem("Token", res.data.token);
+        const token = res.data.token;
 
-        await this.fetchUser();
+        //เก็บ token ลง localstorage
+        localStorage.setItem("Token", token);
+
+        //decode token เพื่อดึงข้อมูล user
+        const decoded: any = jwtDecode(token);
+
+        this.user = {
+          id: decoded.id,
+          username: decoded.username,
+          fullname: decoded.fullname,
+          phone: decoded.phone,
+          role: decoded.role,
+        };
+
+        this.LoggedIn = true;
+
+        // ไปหน้า product
+        router.push({ name: "ProductView" });
       } catch (err) {
         console.error(err);
       }

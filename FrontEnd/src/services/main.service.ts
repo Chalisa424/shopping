@@ -1,13 +1,12 @@
 import axios from "axios";
 
 const getAccessToken = () => {
-    const accessToken = window.localStorage.getItem("accessToken");
-    return accessToken ?? '';
+    return window.localStorage.getItem("accessToken") ?? "";
 }
 
 const httpClient = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
-    timeout: 1000,
+    baseURL: `${import.meta.env.VITE_API_BASE_URL}${import.meta.env.VITE_API_DIR}`,
+    timeout: 2000,
 })
 
 //request interceptor
