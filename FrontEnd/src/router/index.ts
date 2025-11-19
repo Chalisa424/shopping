@@ -18,7 +18,7 @@ const routes = [
         path: 'login',
         name: 'LoginView',
         meta: { title: 'เข้าสู่ระบบ' },
-        component: () => import('../views/LoginView.vue'),
+        component: () => import('../views/loginView.vue'),
       },
     ],
   },
@@ -31,7 +31,7 @@ const routes = [
     meta:{
       title:'รายการสินค้า'
   },
-    component: () => import("../views/ProductView.vue"),
+    component: () => import("../views/productView.vue"),
   },
   
 ];
