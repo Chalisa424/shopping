@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-6xl px-4 py-8">
+  <div class="mx-auto max-w-7xl px-4 py-8">
     <!--Title  -->
     <h1 class="mb-6 text-center text-white text-2xl font-bold text-slate-800 text-shadow-lg ">
       รายการสินค้าทั้งหมด
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Grid -->
-    <div v-else class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div v-else class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
       <pokemonCard
         v-for="item in filteredPokemons"
         :key="item.id"
@@ -31,6 +31,16 @@
         @add-to-cart="handleAddToCart"
       />
     </div>
+
+    <!-- pagination -->
+     <div class="mt-8 flex justify-center">
+      <pagination 
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
+      :total-pages="totalPages"
+      @change="handlePageChange"
+      /> 
+     </div>
 
     <!-- ไม่พบสินค้าที่ค้นหา -->
     <p
@@ -48,24 +58,40 @@ import SearchBar from "../components/searchBar.vue";
 import { fetchPokemonPage } from "../services/pokemon.service";
 import type { PokemonModel } from "../models/pokemon.model";
 import { ref, computed, onMounted } from "vue";
+import pagination from "../components/pagination.vue";
 
 const pokemons = ref<PokemonModel[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 const search = ref("");
 
-onMounted(async () => {
-  loading.value = true;
-  error.value = null;
+const currentPage = ref(1)
+const pageSize = ref(20)
+
+const totalItems = ref(200)
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(totalItems.value / pageSize.value))
+)
+
+const loadPage = async () => {
+  loading.value = true
+  error.value = null
   try {
-    pokemons.value = await fetchPokemonPage(1, 12);
-  } catch (e) {
-    console.error(e);
-    error.value = "ไม่สามารถโหลดรายการสินค้าได้";
+    pokemons.value = await fetchPokemonPage( currentPage.value, pageSize.value)
+  }catch (e){
+    console.error(e)
+    error.value = 'ไม่สามารถโหลดรายการสินค้าได้'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-});
+}
+
+onMounted(loadPage)
+
+// เปลี่ยนหน้า / pageSize
+const handlePageChange = () => {
+  loadPage()
+}
 
 const filteredPokemons = computed(() => {
   const keyword = search.value.trim().toLowerCase();
