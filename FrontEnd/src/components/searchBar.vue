@@ -7,7 +7,7 @@
           @input="$emit('update:modelValue',($event.target as HTMLInputElement).value)"
           type="text"
           :placeholder="placeholder"
-          class="w-full rounded-full border border-slate-300 px-4 py-2.5 pl-12 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
+          class="w-full rounded-full border bg-white border-emerald-300 border-3 px-4 py-2.5 pl-12 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
         />
         <!-- ปุ่มค้นหา -->
         <BaseButton
