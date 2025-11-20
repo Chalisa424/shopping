@@ -6,34 +6,36 @@ import {
 } from "vue-router";
 
 const routes = [
- {
-    path: '/',
-    component: () => import('../layouts/AuthLayout.vue'),
+  {
+    path: "/",
+    component: () => import("../layouts/AuthLayout.vue"),
     children: [
       {
-        path: '',
-        redirect: { name: 'LoginView' },
+        path: "",
+        redirect: { name: "LoginView" },
       },
       {
-        path: 'login',
-        name: 'LoginView',
-        meta: { title: 'เข้าสู่ระบบ' },
-        component: () => import('../views/loginView.vue'),
+        path: "login",
+        name: "LoginView",
+        meta: { title: "เข้าสู่ระบบ" },
+        component: () => import("../views/loginView.vue"),
       },
     ],
   },
 
-  
   // Product View
   {
-    path:'/products',
-    name:'ProductView',
-    meta:{
-      title:'รายการสินค้า'
+    path: "/products",
+    component: () => import("../layouts/ShopLayout.vue"),
+    children: [
+      {
+        path: "",
+        name: "ProductView",
+        meta: { title: "รายการสินค้า" },
+        component: () => import("../views/productView.vue"),
+      },
+    ],
   },
-    component: () => import("../views/productView.vue"),
-  },
-  
 ];
 
 const router = createRouter({

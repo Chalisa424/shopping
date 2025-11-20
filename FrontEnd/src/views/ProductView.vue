@@ -1,7 +1,7 @@
 <template>
   <div class="mx-auto max-w-6xl px-4 py-8">
     <!--Title  -->
-    <h1 class="mb-6 text-center text-2xl font-bold text-slate-800">
+    <h1 class="mb-6 text-center text-white text-2xl font-bold text-slate-800 text-shadow-lg ">
       รายการสินค้าทั้งหมด
     </h1>
 
