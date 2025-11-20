@@ -38,16 +38,16 @@
             สินค้าหมด
             </button>
 
-            <button
+            <BaseButton
             v-else
             class="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500
-               py-2 text-xs font-semibold text-white hover:bg-emerald-600"
+                py-1.5 text-xs font-semibold text-white hover:bg-emerald-600"
 
             @click="$emit('add-to-cart',pokemon)"
             >
             <Icon icon="material-symbols:shopping-cart-outline" width="24" height="24" />
             เพิ่มไปยังรถเข็น
-            </button>
+            </BaseButton>
            </div> 
     </div>
 </template>
@@ -55,6 +55,7 @@
 <script setup lang="ts">
 import { Icon } from "@iconify/vue";
 import type { PokemonModel } from '../models/pokemon.model';
+import BaseButton from "./ฺBaseButton.vue";
 
 defineProps<{
   pokemon: PokemonModel;

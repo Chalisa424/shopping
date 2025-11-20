@@ -10,7 +10,7 @@
           class="w-full rounded-full border border-slate-300 px-4 py-2.5 pl-12 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
         />
         <!-- ปุ่มค้นหา -->
-        <button 
+        <BaseButton
         type="button"
         class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center
              h-8 w-9 rounded-full bg-gradient-to-r from-indigo-500 to-emerald-400
@@ -23,13 +23,14 @@
           height="20"
           class="text-white"
         />
-        </button>
+        </BaseButton>
       </div>
     </div> 
 </template>
 
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import BaseButton from './ฺBaseButton.vue'
 
 defineProps<{
     modelValue: string
