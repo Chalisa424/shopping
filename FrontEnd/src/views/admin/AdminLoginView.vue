@@ -121,18 +121,18 @@ const handleLogin = async () => {
 
   try {
     loading.value = true
-    await auth.login({
+    await auth.adminLogin({
       username: form.value.username.trim(),
       password: form.value.password,
     })
 
     if (!auth.isAdmin){
         errorMessage.value = "บัญชีนี้ไม่มีสิทธิ์ผู้ดูแลระบบ "
-        await auth.logout
+        await auth.logout()
         return
     }
 
-    router.push({name: 'OrderView'})
+    router.push({name: 'AdminOrderView'})
 
   } catch (e) {
     errorMessage.value = 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง'
