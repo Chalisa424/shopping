@@ -45,19 +45,19 @@ const routes = [
     children: [
       {
         path: "",
-        redirect: { name: "AdminLogin" },
+        redirect: { name: "AdminLoginView" },
       },
       {
         path: "Login",
-        name: "AdminLogin",
+        name: "AdminLoginView",
         meta: { title: "เข้าสู่ระบบผู้ดูแล" },
-        component: () => import("../views/admin/LoginView.vue"),
+        component: () => import("../views/admin/AdminLoginView.vue"),
       },
       {
         path: "order",
         name: "AdminOrderView",
         meta: { title: "จัดการสินค้า" },
-        component: () => import("../views/admin/OrderView.vue"),
+        component: () => import("../views/admin/AdminOrderView.vue"),
       },
     ],
   },
