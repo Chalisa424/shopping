@@ -126,6 +126,13 @@ const handleLogin = async () => {
       password: form.value.password,
     })
 
+    // แอดมิน ห้ามเข้า
+    if (!auth.isUser){
+      errorMessage.value = 'บัญชีนี้เป็นผู้ดูแลระบบ กรุณาเข้าสู่ระบบผ่านหน้าผู้ดูแล'
+      await auth.logout()
+      return
+    }
+
     router.push({name: 'ProductView'})
   } catch (e) {
     errorMessage.value = 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง'
