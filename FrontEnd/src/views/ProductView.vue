@@ -1,7 +1,9 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 py-8">
+    <navbar :cart-count="0" />
+
     <!--Title  -->
-    <h1 class="mb-6 text-center text-white text-2xl font-bold text-slate-800 text-shadow-lg ">
+    <h1 class="mt-20 mb-5 text-center text-white text-2xl font-bold text-slate-800 text-shadow-lg ">
       รายการสินค้าทั้งหมด
     </h1>
 
@@ -58,7 +60,9 @@ import SearchBar from "../components/searchBar.vue";
 import { fetchPokemonPage } from "../services/pokemon.service";
 import type { PokemonModel } from "../models/pokemon.model";
 import { ref, computed, onMounted } from "vue";
+import navbar from "../components/navbar.vue";
 import pagination from "../components/pagination.vue";
+
 
 const pokemons = ref<PokemonModel[]>([]);
 const loading = ref(false);
@@ -108,3 +112,10 @@ const handleSearchClick = () =>{
     console.log('search click:', search.value)
 }
 </script>
+
+<style scoped>
+.bg-color {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #2563eb 0%, #ffde00 100%);
+}
+</style>
