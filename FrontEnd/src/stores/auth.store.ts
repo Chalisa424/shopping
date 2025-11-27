@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import router from "../router";
 import type { Me, LoginRequest } from "../models/auth.model";
 import { login, getMe } from "../services/auth.service";
+import { adminLogin as adminLoginApi } from "../services/admin.service";
 import { jwtDecode } from "jwt-decode";
 
 interface AuthState {
@@ -17,10 +18,12 @@ export const authStore = defineStore("auth", {
 
   getters: {
     isAuthenticated: (state) => state.LoggedIn && !!state.user,
-    isAdmin: (state) => state.user?.role === 'ADMIN',
+    isAdmin: (state) => 
+      state.user?.role && state.user.role.toLowerCase() === 'admin',
   },
 
   actions: {
+     // USER LOGIN (POST /auth/login)
     async login(payload: LoginRequest) {
       try {
         //เรียก api login
@@ -47,6 +50,30 @@ export const authStore = defineStore("auth", {
         console.error(err);
       }
     },
+
+    // ADMIN LOGIN (GET /admin/login)
+    async adminLogin(payload: LoginRequest) {
+      try{
+        const res = await adminLoginApi(payload);
+        const token = res.data.token;
+
+        localStorage.setItem("Token",token)
+        const decoded: any = jwtDecode(token);
+        this.user = {
+          id: decoded.id,
+          username: decoded.username,
+          fullname: decoded.fullname,
+          phone: decoded.phone,
+          role: decoded.role,
+        };
+
+        this.LoggedIn = true;
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
+    },
+
     //fetch user ใน store
     async fetchUser() {
       try {
