@@ -1,4 +1,6 @@
 //เรียก /api/login
+export type Role = 'USER' | 'ADMIN';
+
 export interface LoginRequest {
     username: string;
     password: string;
@@ -11,14 +13,14 @@ export interface RegisterRequest {
     phone: string;
     password: string;
     confirmPassword: string;
-    role: string;
+    role: Role;
 }
 
 //response จาก /api/login
 export interface LoginResponse {
     token: string;
     username: string;
-    role: string;
+    role: Role;
 }
 
 //response จาก register
@@ -27,7 +29,7 @@ export interface RegisterResponse {
     username: string;
     fullname: string;
     phone: string;
-    role: string;
+    role: Role;
 }
 
 //ข้อมูลผู้ใช้งานหลัง login
@@ -36,5 +38,5 @@ export interface Me {
     username: string;
     fullname: string;
     phone: string;
-    role: string;
+    role: Role;
 }

@@ -15,6 +15,11 @@ export const authStore = defineStore("auth", {
     LoggedIn: false,
   }),
 
+  getters: {
+    isAuthenticated: (state) => state.LoggedIn && !!state.user,
+    isAdmin: (state) => state.user?.role === 'ADMIN',
+  },
+
   actions: {
     async login(payload: LoginRequest) {
       try {
@@ -38,8 +43,6 @@ export const authStore = defineStore("auth", {
 
         this.LoggedIn = true;
 
-        // ไปหน้า product
-        router.push({ name: "ProductView" });
       } catch (err) {
         console.error(err);
       }

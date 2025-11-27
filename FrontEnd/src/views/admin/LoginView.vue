@@ -90,10 +90,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { authStore } from '../stores/auth.store'
+import { authStore } from '../../stores/auth.store'
 import { Icon } from '@iconify/vue'
-import Logo from '../assets/picture/logo.png'
-import BaseButton from '../components/ฺBaseButton.vue'
+import Logo from '../../assets/picture/logo.png'
+import BaseButton from '../../components/ฺBaseButton.vue'
 
 const router = useRouter()
 const auth = authStore()
@@ -126,7 +126,14 @@ const handleLogin = async () => {
       password: form.value.password,
     })
 
-    router.push({name: 'ProductView'})
+    if (!auth.isAdmin){
+        errorMessage.value = "บัญชีนี้ไม่มีสิทธิ์ผู้ดูแลระบบ "
+        await auth.logout
+        return
+    }
+
+    router.push({name: 'OrderView'})
+
   } catch (e) {
     errorMessage.value = 'เข้าสู่ระบบไม่สำเร็จ กรุณาตรวจสอบข้อมูลอีกครั้ง'
   } finally {

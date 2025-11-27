@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const getAccessToken = () => {
-    return window.localStorage.getItem("accessToken") ?? "";
+    return window.localStorage.getItem("Token") ?? "";
 }
 
 const httpClient = axios.create({
@@ -36,8 +36,7 @@ httpClient.interceptors.response.use(
       if (err.response.status === 401 && !originalConfig._retry) {
         originalConfig._retry = true
 
-        // ลบ token ออก 
-        localStorage.removeItem('token')
+        localStorage.removeItem('Token')
 
         // กลับไปหน้า login
         if (window.location.pathname !== '/login') {

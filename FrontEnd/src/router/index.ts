@@ -6,6 +6,7 @@ import {
 } from "vue-router";
 
 const routes = [
+  // User Login
   {
     path: "/",
     component: () => import("../layouts/AuthLayout.vue"),
@@ -23,7 +24,7 @@ const routes = [
     ],
   },
 
-  // Product View
+  // Product View (User)
   {
     path: "/products",
     component: () => import("../layouts/ShopLayout.vue"),
@@ -32,7 +33,31 @@ const routes = [
         path: "",
         name: "ProductView",
         meta: { title: "รายการสินค้า" },
-        component: () => import("../views/productView.vue"),
+        component: () => import("../views/ProductView.vue"),
+      },
+    ],
+  },
+
+  // Admin
+  {
+    path: "/admin",
+    component: () => import("../layouts/AdminLayout.vue"),
+    children: [
+      {
+        path: "",
+        redirect: { name: "AdminLogin" },
+      },
+      {
+        path: "Login",
+        name: "AdminLogin",
+        meta: { title: "เข้าสู่ระบบผู้ดูแล" },
+        component: () => import("../views/admin/LoginView.vue"),
+      },
+      {
+        path: "order",
+        name: "AdminOrderView",
+        meta: { title: "จัดการสินค้า" },
+        component: () => import("../views/admin/OrderView.vue"),
       },
     ],
   },

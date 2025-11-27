@@ -7,7 +7,7 @@
       <RouterLink to="/products" class="flex items-center gap-2">
         <img :src="logoSrc" alt="Pokemon Shop Logo" class="h-10" />
       </RouterLink>
-
+ 
       <!-- ปุ่มเมนูมือถือ -->
       <button
         type="button"
