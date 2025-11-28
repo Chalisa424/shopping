@@ -37,6 +37,19 @@ const routes = [
       },
     ],
   },
+  // Cart (User)
+  {
+    path: "/cart",
+    component: () => import("../layouts/ShopLayout.vue"),
+    children: [
+      {
+        path: "",
+        name: "CartView",
+        meta: { title: "รถเข็น" },
+        component: () => import("../views/CartView.vue"),
+      },
+    ],
+  },
 
   // Admin
   {

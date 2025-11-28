@@ -2,7 +2,7 @@
   <nav
     class="fixed top-0 left-0 right-0 z-20 bg-white/80 backdrop-blur border-b border-slate-200"
   >
-    <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+    <div class="mx-auto flex max-w-[90rem] items-center justify-between px-4 py-3">
       <!-- Logo -->
       <RouterLink to="/products" class="flex items-center gap-2">
         <img :src="logoSrc" alt="Pokemon Shop Logo" class="h-10" />
@@ -36,7 +36,8 @@
         <button
           type="button"
           class="relative inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-slate-700 shadow hover:bg-slate-50"
-        >
+          @click="goCart"
+          >
           <Icon icon="mdi:cart-outline" width="22" height="22" />
           <span
             v-if="cartCountComputed > 0"
@@ -97,6 +98,7 @@
         <button
           type="button"
           class="flex items-center gap-2 text-sm text-slate-700"
+          @click="goCart"
         >
           <Icon icon="mdi:cart-outline" width="20" height="20" />
           รถเข็น
@@ -170,4 +172,9 @@ const switchToAdmin = () => {
   showMobileMenu.value = false;
   router.push({ name: "LoginView", query: { role: "admin" } });
 };
+
+const goCart =() =>{
+  showMobileMenu.value = false
+  router.push({name: 'CartView'})
+}
 </script>
