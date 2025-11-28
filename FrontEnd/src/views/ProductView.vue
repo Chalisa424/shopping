@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto max-w-7xl px-4 py-8">
-    <navbar :cart-count="0" />
+    <navbar :cart-count="cartCount" />
 
     <!--Title  -->
     <h1 class="mt-20 mb-5 text-center text-white text-2xl font-bold text-slate-800 text-shadow-lg ">
@@ -62,6 +62,9 @@ import type { PokemonModel } from "../models/pokemon.model";
 import { ref, computed, onMounted } from "vue";
 import navbar from "../components/navbar.vue";
 import pagination from "../components/pagination.vue";
+import { cartStore } from "../stores/cart.store";
+
+const cart = cartStore()
 
 
 const pokemons = ref<PokemonModel[]>([]);
@@ -105,12 +108,14 @@ const filteredPokemons = computed(() => {
 });
 
 const handleAddToCart = (p: PokemonModel) => {
-  console.log("add to cart:", p.name);
+  cart.addItem(p)
 };
 
 const handleSearchClick = () =>{
     console.log('search click:', search.value)
 }
+// จำนวนที่ส่งไป navbar
+const cartCount = computed(() => cart.totalQuantity)
 </script>
 
 <style scoped>

@@ -15,7 +15,7 @@ export const authStore = defineStore("auth", {
     user: undefined,
     LoggedIn: false,
   }),
-
+  //เฉพาะ ตาม role ที่กำหนด
   getters: {
     isAuthenticated: (state) => state.LoggedIn && !!state.user,
     isAdmin: (state) => 
@@ -25,7 +25,7 @@ export const authStore = defineStore("auth", {
   },
 
   actions: {
-     // USER LOGIN (POST /auth/login)
+     // user login 
     async login(payload: LoginRequest) {
       try {
         //เรียก api login
@@ -53,7 +53,7 @@ export const authStore = defineStore("auth", {
       }
     },
 
-    // ADMIN LOGIN (GET /admin/login)
+    // admin login
     async adminLogin(payload: LoginRequest) {
       try{
         const res = await adminLoginApi(payload);
