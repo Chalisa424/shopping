@@ -51,6 +51,20 @@ const routes = [
     ],
   },
 
+    // My Orders (User)
+  {
+    path: "/my-orders",
+    component: () => import("../layouts/ShopLayout.vue"),
+    children: [
+      {
+        path: "",
+        name: "MyOrdersView",
+        meta: { title: "รายการสั่งซื้อของฉัน" },
+        component: () => import("../views/MyOrdersView.vue"),
+      },
+    ],
+  },
+
   // Admin
   {
     path: "/admin",

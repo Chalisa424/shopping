@@ -162,7 +162,6 @@ import { cartStore } from "../stores/cart.store";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";   
-
 const cart = cartStore();
 const router = useRouter();
 
@@ -176,6 +175,12 @@ const toggleAll = (e: Event) => {
 };
 
 const goCheckout = () => {
-  router.push({ name: "OrderListView" });
+  router.push({ 
+    name: "MyOrdersView",
+    query: {
+      success: "1",
+      items: cart.selectedCount.toString(),
+    } 
+  });
 };
 </script>
