@@ -54,6 +54,16 @@
     >
       ไม่พบสินค้าที่ค้นหา
     </p>
+
+    <!-- Cart Popup -->
+    <CartPopup
+      :show="showCartPopup"
+      :product-name="lastAddedProduct?.name ?? ''"
+      :quantity="lastAddedQuantity"
+      @close="showCartPopup = false"
+      @go-cart="handleGoCart"
+    />
+
   </div>
 </template>
 
@@ -66,9 +76,10 @@ import { ref, computed, onMounted } from "vue";
 import navbar from "../components/navbar.vue";
 import pagination from "../components/pagination.vue";
 import { cartStore } from "../stores/cart.store";
+import CartPopup from "../components/CartPopup.vue"
+import { useRouter } from "vue-router"
 
 const cart = cartStore()
-
 
 const pokemons = ref<PokemonModel[]>([]);
 const loading = ref(false);
@@ -82,6 +93,10 @@ const totalItems = ref(200)
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(totalItems.value / pageSize.value))
 )
+
+const showCartPopup = ref(false)
+const lastAddedProduct = ref<PokemonModel | null>(null)
+const router = useRouter()
 
 const loadPage = async () => {
   loading.value = true
@@ -116,8 +131,27 @@ const filteredPokemons = computed(() => {
   p.name.toLowerCase().includes(keyword));
 });
 
+const lastAddedQuantity = computed(() => {
+  if (!lastAddedProduct.value) return 0;
+  const item = cart.items.find(
+    (i) => i.id === lastAddedProduct.value!.id
+  );
+  return item ? item.quantity : 0;
+});
+
 const handleAddToCart = (p: PokemonModel) => {
-  cart.addItem(p)
+  cart.addItem(p);
+  lastAddedProduct.value = p;
+  showCartPopup.value = true;
+
+  setTimeout(() => {
+    showCartPopup.value = false;
+  }, 3000);
+};
+
+const handleGoCart = () => {
+  showCartPopup.value = false;
+  router.push("/cart");
 };
 
 const handleSearchClick = () =>{
