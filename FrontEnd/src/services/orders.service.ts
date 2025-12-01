@@ -4,36 +4,35 @@ import type { CartModel } from "../models/cart.model";
 
 // ดึงรายการสั่งซื้อของ user ปัจจุบัน
 export const fetchMyOrders = async (): Promise<OrderModel[]> => {
-  const res = await httpClient.get("my-orders"); 
+  const res = await httpClient.get("orders");  // GET /api/orders
   return res.data;
 };
 
-// ดึงรายการสั่งซื้อทั้งหมด (สำหรับ admin)
+// ดึงรายการสั่งซื้อทั้งหมด (อนาคตเอาไปใช้หน้า admin ได้)
 export const fetchAdminOrders = async (): Promise<OrderModel[]> => {
-  const res = await httpClient.get("admin/orders");
+  const res = await httpClient.get("orders");
   return res.data;
 };
 
-// อัปเดตสถานะคำสั่งซื้อ (ฝั่ง admin)
-export const updateOrderStatus = async (
-  orderId: number,
-  status: string
-) => {
-  const res = await httpClient.put(`admin/orders/${orderId}/status`, {
-    status,
-  });
+// อัปเดตสถานะคำสั่งซื้อ
+export const updateOrderStatus = async (orderId: number, status: string) => {
+  const res = await httpClient.put(`orders/${orderId}`, { status });
   return res.data;
 };
 
-// เพิ่มฟังก์ชันสร้างคำสั่งซื้อ (user กด "สั่งสินค้า")\
+// สร้างคำสั่งซื้อ ตอน user กด "สั่งสินค้า"
 export const createOrder = async (items: CartModel[]) => {
   const payload = {
-    items: items.map((i) => ({
-      productId: i.id,
-      quantity: i.quantity,
+
+    shippingAddress: "string",
+    orderDetails: items.map((i) => ({
+      productId: Number(i.id),     // แปลงเป็น number เผื่อ backend ใช้ int
+      quantity: i.quantity,        // ต้องใช้ชื่อว่า quantity ตาม swagger
     })),
   };
 
-    const res = await httpClient.post("orders", payload);
-  return res.data;
+  console.log("createOrder payload:", payload); 
+
+  const res = await httpClient.post("orders", payload); // POST /api/orders
+  return res.data; 
 };

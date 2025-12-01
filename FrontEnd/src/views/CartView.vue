@@ -161,7 +161,9 @@ import CartFooter from "../components/CartFooter.vue";
 import { cartStore } from "../stores/cart.store";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
-import { Icon } from "@iconify/vue";   
+import { Icon } from "@iconify/vue"; 
+import { createOrder } from "../services/orders.service";
+  
 const cart = cartStore();
 const router = useRouter();
 
@@ -174,13 +176,40 @@ const toggleAll = (e: Event) => {
   cart.setAllChecked(checked);
 };
 
-const goCheckout = () => {
-  router.push({ 
-    name: "MyOrdersView",
-    query: {
-      success: "1",
-      items: cart.selectedCount.toString(),
-    } 
-  });
+// const goCheckout = () => {
+//   router.push({ 
+//     name: "MyOrdersView",
+//     query: {
+//       success: "1",
+//       items: cart.selectedCount.toString(),
+//     } 
+//   });
+// };
+
+const goCheckout = async () => {
+  const selectedItems = cart.items.filter((i) => i.checked);
+
+  if (selectedItems.length === 0) {
+    alert("กรุณาเลือกสินค้าที่ต้องการสั่งซื้อ");
+    return;
+  }
+
+  try {
+    const orderData = await createOrder(selectedItems);
+
+    cart.removeSelected();
+
+    router.push({
+      name: "MyOrdersView",
+      query: {
+        success: "1",
+        items: selectedItems.length.toString(),
+        orderCode: orderData.orderCode ?? "",
+      },
+    });
+  } catch (e: any) {
+    console.error("สร้างคำสั่งซื้อไม่สำเร็จ", e);
+    alert("ไม่สามารถสร้างคำสั่งซื้อได้");
+  }
 };
 </script>

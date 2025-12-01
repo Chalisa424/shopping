@@ -176,7 +176,6 @@ import { Icon } from "@iconify/vue";
 import type { OrderModel, OrderStatus } from "../models/order.model";
 import { fetchMyOrders } from "../services/orders.service";
 import OrderSuccessPopup from "../components/OrderSuccessPopup.vue";
-import { authStore } from "../stores/auth.store";
 
 
 const orders = ref<OrderModel[]>([]);
@@ -242,9 +241,6 @@ const toggleExpand = (id: number) => {
 };
 
 onMounted(async () => {
-  const auth = authStore();
-  await auth.fetchUser();   
-
   await loadOrders();
 
   if (route.query.success === "1") {
