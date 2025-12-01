@@ -6,3 +6,9 @@ export interface PokemonModel{
     price: number;
     isOutofStock: boolean;
 }
+export interface Pagination{
+    count: number;
+    next: string;
+    previous: string;
+    
+}

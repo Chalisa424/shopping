@@ -7,11 +7,9 @@ export interface LoginRequest {
 }
 
 //เรียก /api/auth/register
-export interface RegisterRequest {
-    username: string;
+export interface RegisterRequest extends LoginRequest{
     fullname: string;
     phone: string;
-    password: string;
     confirmPassword: string;
     role: Role;
 }

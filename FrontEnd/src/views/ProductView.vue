@@ -1,18 +1,20 @@
 <template>
-  <div class="mx-auto max-w-[90rem] px-4 py-8">
+  <div class="mx-auto max-w-[80rem] px-4 py-8">
     <navbar :cart-count="cartCount" />
 
     <!--Title  -->
-    <h1 class="mt-20 mb-5 text-center text-white text-2xl font-bold text-slate-800 text-shadow-lg ">
+    <h1
+      class="mt-20 mb-5 text-center text-white text-2xl font-bold text-slate-800 text-shadow-lg"
+    >
       รายการสินค้าทั้งหมด
     </h1>
 
     <!-- Search -->
-    <div class="mb-6 ">
-      <searchBar 
-      v-model="search"
-      placeholder="ค้นหาสินค้า"
-      @search="handleSearchClick"
+    <div class="mb-6">
+      <searchBar
+        v-model="search"
+        placeholder="ค้นหาสินค้า"
+        @search="handleSearchClick"
       />
     </div>
 
@@ -26,6 +28,7 @@
 
     <!-- Grid -->
     <div v-else class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+      <!-- {{ pokemons }} -->
       <pokemonCard
         v-for="item in filteredPokemons"
         :key="item.id"
@@ -35,14 +38,14 @@
     </div>
 
     <!-- pagination -->
-     <div class="mt-8 flex justify-center">
-      <pagination 
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      :total-pages="totalPages"
-      @change="handlePageChange"
-      /> 
-     </div>
+    <div class="mt-8 flex justify-center">
+      <pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :total-pages="totalPages"
+        @change="handlePageChange"
+      />
+    </div>
 
     <!-- ไม่พบสินค้าที่ค้นหา -->
     <p
@@ -84,8 +87,14 @@ const loadPage = async () => {
   loading.value = true
   error.value = null
   try {
-    pokemons.value = await fetchPokemonPage( currentPage.value, pageSize.value)
-  }catch (e){
+    const pokemonsData = await fetchPokemonPage()
+    pokemons.value = pokemonsData.map((p: any) => ({
+      ...p,
+      image: p.imageUrl,          // map imageUrl → image
+      isOutofStock: p.stock === 0 // สร้าง field สำหรับปุ่ม
+    }))
+
+  } catch (e) {
     console.error(e)
     error.value = 'ไม่สามารถโหลดรายการสินค้าได้'
   } finally {
@@ -103,7 +112,7 @@ const handlePageChange = () => {
 const filteredPokemons = computed(() => {
   const keyword = search.value.trim().toLowerCase();
   if (!keyword) return pokemons.value
-  return pokemons.value.filter((p) => 
+  return pokemons.value.filter((p) =>
   p.name.toLowerCase().includes(keyword));
 });
 
@@ -117,10 +126,3 @@ const handleSearchClick = () =>{
 // จำนวนที่ส่งไป navbar
 const cartCount = computed(() => cart.totalQuantity)
 </script>
-
-<style scoped>
-.bg-color {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #2563eb 0%, #ffde00 100%);
-}
-</style>

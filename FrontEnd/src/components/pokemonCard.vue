@@ -15,7 +15,6 @@
                 {{ pokemon.name }}
             </h3>
             <p class="mt-1 text-xs text-slate-500">
-                {{ pokemon.types.join(",") }}
             </p>
           </div>
 
