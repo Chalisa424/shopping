@@ -170,7 +170,7 @@ const switchToAdmin = () => {
   localStorage.setItem("preferredRole", "admin");
   showUserMenu.value = false;
   showMobileMenu.value = false;
-  router.push({ name: "LoginView", query: { role: "admin" } });
+  router.push({ name: "AdminLoginView" });
 };
 
 const goCart =() =>{
