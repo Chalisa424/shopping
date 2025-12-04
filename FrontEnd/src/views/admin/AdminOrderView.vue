@@ -5,7 +5,7 @@
 
     <!-- ใช้ component กลางสำหรับรายการสั่งซื้อ (เวอร์ชัน Admin) -->
     <OrderListCard
-      title="จัดการการสั่งซื้อ"
+      title="จัดการการคำสั่งซื้อ"
       :orders="orders"
       :loading="loading"
       :error="error"
@@ -46,7 +46,7 @@ import type { OrderModel } from "../../models/order.model";
 import { fetchMyOrders } from "../../services/orders.service";
 import OrderSuccessPopup from "../../components/OrderSuccessPopup.vue";
 import { authStore } from "../../stores/auth.store";
-import OrderListCard from "../../components/OrderListCard.vue";
+import OrderListCard from "../../components/AdminOrderList.vue";
 
 const orders = ref<OrderModel[]>([]);
 const loading = ref(false);
@@ -82,10 +82,6 @@ const loadOrders = async () => {
         0
       );
 
-      // ชื่อผู้สั่งซื้อ 
-      const customerName =
-        o.customerName ?? o.username ?? o.userName ?? o.fullName ?? "";
-
       return {
         id: o.id,
         orderCode: String(o.id).padStart(6, "0"),
@@ -93,7 +89,8 @@ const loadOrders = async () => {
         totalItems,
         totalQuantity,
         totalPrice,
-        customerName, // ใช้ใน OrderListCard ผ่าน getCustomerText
+        // เก็บ user ทั้งก้อนไว้ใช้ใน OrderListCard
+        user: o.user ?? null,
         items: details.map((d: any) => ({
           id: d.id,
           name: d.productName,
@@ -111,6 +108,7 @@ const loadOrders = async () => {
     loading.value = false;
   }
 };
+
 
 onMounted(async () => {
   const auth = authStore();

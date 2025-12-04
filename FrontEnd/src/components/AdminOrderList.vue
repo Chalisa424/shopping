@@ -93,35 +93,35 @@
           <!-- หัวคอลัมน์ -->
           <thead class="bg-slate-50 text-slate-500 font-semibold">
             <tr>
-              <!-- รหัสการสั่งซื้อ: กว้างเล็กหน่อย -->
-              <th class="w-40 px-4 py-2 text-center">
+              <!-- รหัสการสั่งซื้อ -->
+              <th class="w-32 px-4 py-2 text-center">
                 {{ columnLabelsComputed.code }}
               </th>
 
-              <!-- ผู้สั่งซื้อ: กว้างขึ้นให้ไม่เบียด -->
+              <!-- ผู้สั่งซื้อ -->
               <th
                 v-if="hasCustomerColumn"
-                class="w-50 px-4 py-2 text-center"
+                class="w-60 px-4 py-2 text-center"
               >
                 {{ columnLabelsComputed.customer }}
               </th>
 
               <!-- จำนวนสินค้า -->
-              <th class="w-30 px-4 py-2 text-center">
+              <th class="w-40 px-4 py-2 text-center">
                 {{ columnLabelsComputed.items }}
               </th>
 
               <!-- ราคารวม -->
-              <th class="w-35 px-4 py-2 text-center">
+              <th class="w-32 px-4 py-2 text-center">
                 {{ columnLabelsComputed.total }}
               </th>
 
-              <!-- สถานะ (ให้กินที่ได้เยอะหน่อย) -->
+              <!-- สถานะ -->
               <th class="px-4 py-2 text-center">
                 {{ columnLabelsComputed.status }}
               </th>
 
-              <!-- คอลัมน์สำหรับไอคอน toggle -->
+              <!-- toggle icon -->
               <th class="w-10 px-2 py-2"></th>
             </tr>
           </thead>
@@ -137,15 +137,26 @@
                 class="cursor-pointer hover:bg-slate-50 transition border-b border-slate-100"
                 @click="toggleExpand(order.id)"
               >
-                <td class="w-24 px-15 py-2 text-sm font-semibold text-slate-700">
+                <td class="w-32 px-4 py-2 text-sm font-semibold text-slate-700 text-center">
                   {{ order.orderCode }}
                 </td>
 
+                <!-- ผู้สั่งซื้อ -->
                 <td
                   v-if="hasCustomerColumn"
-                  class="w-48 px-4 py-2 text-xs text-slate-700 truncate"
+                  class="w-60 px-4 py-2 align-middle"
                 >
-                  {{ getCustomerText(order) }}
+                  <div class="text-xs text-slate-700 leading-snug text-left">
+                    <div class="font-semibold text-center ">
+                      Name: {{ getCustomerName(order) || '-' }}
+                    </div>
+                    <div class="text-[11px] px-11 text-slate-500">
+                      Username: {{ getCustomerUsername(order) || '-' }}
+                    </div>
+                    <div class="text-[11px] px-11 text-slate-500">
+                      เบอร์โทร: {{ getCustomerPhone(order) || '-' }}
+                    </div>
+                  </div>
                 </td>
 
                 <td class="w-40 px-4 py-2 text-xs text-slate-500 text-center">
@@ -224,8 +235,6 @@
     </div>
   </div>
 </template>
-
-
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
@@ -316,14 +325,29 @@ const toggleExpand = (id: number) => {
   expandedId.value = expandedId.value === id ? null : id;
 };
 
-// ดึงชื่อผู้สั่งซื้อจาก field ต่าง ๆ ใน order (รองรับหลายรูปแบบ)
-const getCustomerText = (order: any) => {
+//ดึงข้อมูลผู้สั่งซื้อแบบแยก feild
+const getCustomerName = (order: any) => {
   return (
     order.customerName ??
-    order.customer ??
+    order.user?.fullName ??
+    order.user?.name ??
+    ''
+  );
+};
+
+const getCustomerUsername = (order: any) => {
+  return (
+    order.user?.username ??
     order.username ??
-    order.userName ??
-    ""
+    ''
+  );
+};
+
+const getCustomerPhone = (order: any) => {
+  return (
+    order.user?.phone ??
+    order.phone ??
+    ''
   );
 };
 </script>
