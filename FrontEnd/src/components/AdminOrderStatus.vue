@@ -8,7 +8,7 @@
         {{ titleText }}
       </h2>
 
-      <p class="mt-4 text-sm text-center text-slate-600">
+      <p class="mt-4 text-sm  text-slate-600">
         คุณต้องการเปลี่ยนสถานะการสั่งซื้อ
         <span class="font-semibold">{{ selectedCount }}</span>
         รายการเป็น

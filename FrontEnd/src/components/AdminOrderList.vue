@@ -12,59 +12,65 @@
       <div
         class="flex overflow-hidden rounded-2xl bg-slate-50 text-xs md:text-sm font-medium text-slate-500"
       >
-        <button
-          type="button"
-          class="flex-1 py-2 text-center transition"
-          :class="
-            activeStatus === 'ALL'
-              ? 'bg-emerald-500 text-white'
-              : 'hover:bg-slate-100'
-          "
-          @click="activeStatus = 'ALL'"
-        >
-          {{ labelsComputed.all }}
-        </button>
+    <button
+      type="button"
+      class="flex-1 py-2 text-center transition"
+      :class="activeStatus === 'ALL'
+        ? 'bg-emerald-500 text-white'
+        : 'hover:bg-slate-100'"
+      @click="activeStatus = 'ALL'"
+    >
+      {{ labelsComputed.all }}
+    </button>
 
-        <button
-          type="button"
-          class="flex-1 py-2 text-center transition"
-          :class="
-            activeStatus === 'PENDING'
-              ? 'bg-emerald-500 text-white'
-              : 'hover:bg-slate-100'
-          "
-          @click="activeStatus = 'PENDING'"
-        >
-          {{ labelsComputed.pending }}
-        </button>
+    <!-- รอการยืนยัน -->
+    <button
+      type="button"
+      class="flex-1 py-2 text-center transition"
+      :class="activeStatus === 'PENDING'
+        ? 'bg-emerald-500 text-white'
+        : 'hover:bg-slate-100'"
+      @click="activeStatus = 'PENDING'"
+    >
+      {{ labelsComputed.pending }}
+    </button>
 
-        <button
-          type="button"
-          class="flex-1 py-2 text-center transition"
-          :class="
-            activeStatus === 'CONFIRMED'
-              ? 'bg-emerald-500 text-white'
-              : 'hover:bg-slate-100'
-          "
-          @click="activeStatus = 'CONFIRMED'"
-        >
-          {{ labelsComputed.confirmed }}
-        </button>
+    <!-- ยืนยันคำสั่งซื้อ -->
+    <button
+      type="button"
+      class="flex-1 py-2 text-center transition"
+      :class="activeStatus === 'CONFIRMED'
+        ? 'bg-emerald-500 text-white'
+        : 'hover:bg-slate-100'"
+      @click="activeStatus = 'CONFIRMED'"
+    >
+      {{ labelsComputed.confirmed }}
+    </button>
 
-        <button
-          type="button"
-          class="flex-1 py-2 text-center transition"
-          :class="
-            activeStatus === 'CANCELLED'
-              ? 'bg-emerald-500 text-white'
-              : 'hover:bg-slate-100'
-          "
-          @click="activeStatus = 'CANCELLED'"
-        >
-          {{ labelsComputed.cancelled }}
-        </button>
-      </div>
+    <!-- ปฏิเสธคำสั่งซื้อ -->
+    <button
+      type="button"
+      class="flex-1 py-2 text-center transition"
+      :class="activeStatus === 'REJECTED'
+        ? 'bg-emerald-500 text-white'
+        : 'hover:bg-slate-100'"
+      @click="activeStatus = 'REJECTED'"
+    >
+      {{ labelsComputed.refuse }}
+    </button>
 
+    <!-- ยกเลิกคำสั่งซื้อ -->
+    <button
+      type="button"
+      class="flex-1 py-2 text-center transition"
+      :class="activeStatus === 'CANCELLED'
+        ? 'bg-emerald-500 text-white'
+        : 'hover:bg-slate-100'"
+      @click="activeStatus = 'CANCELLED'"
+    >
+      {{ labelsComputed.cancelled }}
+    </button>
+  </div>
       <!-- แถบปุ่มยืนยัน/ปฏิเสธ -->
       <div v-if="selectable" class="mt-4">
         <AdminOrderAction
@@ -290,6 +296,7 @@ const props = withDefaults(
       all?: string;
       pending?: string;
       confirmed?: string;
+      refuse?: string;
       cancelled?: string;
       emptyText?: string;
       loadingText?: string;
@@ -310,6 +317,7 @@ const props = withDefaults(
       all: "ทั้งหมด",
       pending: "รอการยืนยันคำสั่งซื้อ",
       confirmed: "ยืนยันคำสั่งซื้อ",
+      refuse:"ปฏิเสธการสั่งซื้อ",
       cancelled: "ยกเลิกคำสั่งซื้อ",
       emptyText: "ยังไม่มีรายการสั่งซื้อ",
       loadingText: "กำลังโหลดรายการสั่งซื้อ...",
@@ -407,6 +415,7 @@ const statusText = (status: OrderStatus | string) => {
   const upper = status.toUpperCase();
   if (upper === "PENDING") return labelsComputed.value.pending;
   if (upper === "CONFIRMED") return labelsComputed.value.confirmed;
+  if (upper === "REJECTED") return labelsComputed.value.refuse;
   if (upper === "CANCELLED") return labelsComputed.value.cancelled;
   return status;
 };
@@ -416,7 +425,8 @@ const statusBadgeClass = (status: OrderStatus | string) => {
   const upper = status.toUpperCase();
   if (upper === "PENDING") return "bg-amber-100 text-amber-700";
   if (upper === "CONFIRMED") return "bg-emerald-100 text-emerald-700";
-  if (upper === "CANCELLED") return "bg-rose-100 text-rose-700";
+  if (upper === "REJECTED") return "bg-rose-100 text-rose-700";
+  if (upper === "CANCELLED") return "bg-slate-200 text-slate-700";
   return "bg-slate-100 text-slate-600";
 };
 
