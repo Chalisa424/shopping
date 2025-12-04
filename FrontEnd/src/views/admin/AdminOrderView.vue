@@ -1,10 +1,10 @@
 <template>
   <div class="mx-auto max-w-6xl px-4 py-8">
     <!-- navbar -->
-    <navbar :cart-count="cartCount" />
+    <navbar :cart-count="cartCount" />   
 
     <!-- ใช้ component กลางสำหรับรายการสั่งซื้อ (เวอร์ชัน Admin) -->
-    <OrderListCard
+    <AdminOrderList
       title="จัดการการคำสั่งซื้อ"
       :orders="orders"
       :loading="loading"
@@ -24,9 +24,11 @@
         total: 'ราคารวม',
         status: 'สถานะ',
       }"
+      selectable
+      v-model:selected-ids="selectedIds"
     />
 
-    <!-- Popup หลังสั่งซื้อ (ถ้าจะใช้ใน Admin ก็ยังอยู่) -->
+    <!-- Popup หลังสั่งซื้อ -->
     <OrderSuccessPopup
       :show="showOrderPopup"
       :title-text="popupTitle"
@@ -46,11 +48,13 @@ import type { OrderModel } from "../../models/order.model";
 import { fetchMyOrders } from "../../services/orders.service";
 import OrderSuccessPopup from "../../components/OrderSuccessPopup.vue";
 import { authStore } from "../../stores/auth.store";
-import OrderListCard from "../../components/AdminOrderList.vue";
+import AdminOrderList from "../../components/AdminOrderList.vue";
 
 const orders = ref<OrderModel[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
+
+const selectedIds = ref<number[]>([]);
 
 const showOrderPopup = ref(false);
 const popupTitle = ref("สั่งซื้อสินค้าเรียบร้อย");
@@ -89,7 +93,6 @@ const loadOrders = async () => {
         totalItems,
         totalQuantity,
         totalPrice,
-        // เก็บ user ทั้งก้อนไว้ใช้ใน OrderListCard
         user: o.user ?? null,
         items: details.map((d: any) => ({
           id: d.id,
@@ -108,7 +111,6 @@ const loadOrders = async () => {
     loading.value = false;
   }
 };
-
 
 onMounted(async () => {
   const auth = authStore();

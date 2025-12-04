@@ -15,9 +15,11 @@
         <button
           type="button"
           class="flex-1 py-2 text-center transition"
-          :class="activeStatus === 'ALL'
-            ? 'bg-emerald-500 text-white'
-            : 'hover:bg-slate-100'"
+          :class="
+            activeStatus === 'ALL'
+              ? 'bg-emerald-500 text-white'
+              : 'hover:bg-slate-100'
+          "
           @click="activeStatus = 'ALL'"
         >
           {{ labelsComputed.all }}
@@ -26,9 +28,11 @@
         <button
           type="button"
           class="flex-1 py-2 text-center transition"
-          :class="activeStatus === 'PENDING'
-            ? 'bg-emerald-500 text-white'
-            : 'hover:bg-slate-100'"
+          :class="
+            activeStatus === 'PENDING'
+              ? 'bg-emerald-500 text-white'
+              : 'hover:bg-slate-100'
+          "
           @click="activeStatus = 'PENDING'"
         >
           {{ labelsComputed.pending }}
@@ -37,9 +41,11 @@
         <button
           type="button"
           class="flex-1 py-2 text-center transition"
-          :class="activeStatus === 'CONFIRMED'
-            ? 'bg-emerald-500 text-white'
-            : 'hover:bg-slate-100'"
+          :class="
+            activeStatus === 'CONFIRMED'
+              ? 'bg-emerald-500 text-white'
+              : 'hover:bg-slate-100'
+          "
           @click="activeStatus = 'CONFIRMED'"
         >
           {{ labelsComputed.confirmed }}
@@ -48,13 +54,25 @@
         <button
           type="button"
           class="flex-1 py-2 text-center transition"
-          :class="activeStatus === 'CANCELLED'
-            ? 'bg-emerald-500 text-white'
-            : 'hover:bg-slate-100'"
+          :class="
+            activeStatus === 'CANCELLED'
+              ? 'bg-emerald-500 text-white'
+              : 'hover:bg-slate-100'
+          "
           @click="activeStatus = 'CANCELLED'"
         >
           {{ labelsComputed.cancelled }}
         </button>
+      </div>
+
+      <!-- แถบปุ่มยืนยัน/ปฏิเสธ -->
+      <div v-if="selectable" class="mt-4">
+        <AdminOrderAction
+          v-show="selectedIds.length > 0"
+          :selected-count="selectedIds.length"
+          @confirm-selected="handleConfirmClick"
+          @reject-selected="handleRejectClick"
+        />
       </div>
     </div>
 
@@ -86,23 +104,27 @@
         </div>
 
         <!-- ตารางหลัก -->
-        <table
-          v-else
-          class="w-full mt-3 text-[12px] text-slate-700"
-        >
+        <table v-else class="w-full mt-3 text-[12px] text-slate-700">
           <!-- หัวคอลัมน์ -->
           <thead class="bg-slate-50 text-slate-500 font-semibold">
             <tr>
+              <!--  หัว checkbox -->
+              <th v-if="selectable" class="w-10 px-4 py-2 text-center">
+                <input
+                  type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-emerald-500"
+                  :checked="allSelected"
+                  @change.stop="toggleSelectAll"
+                />
+              </th>
+
               <!-- รหัสการสั่งซื้อ -->
               <th class="w-32 px-4 py-2 text-center">
                 {{ columnLabelsComputed.code }}
               </th>
 
               <!-- ผู้สั่งซื้อ -->
-              <th
-                v-if="hasCustomerColumn"
-                class="w-60 px-4 py-2 text-center"
-              >
+              <th v-if="hasCustomerColumn" class="w-60 px-4 py-2 text-center">
                 {{ columnLabelsComputed.customer }}
               </th>
 
@@ -128,16 +150,29 @@
 
           <!-- แถว summary + แถวรายละเอียด -->
           <tbody>
-            <template
-              v-for="order in filteredOrders"
-              :key="order.id"
-            >
+            <template v-for="order in filteredOrders" :key="order.id">
               <!-- แถว summary -->
               <tr
                 class="cursor-pointer hover:bg-slate-50 transition border-b border-slate-100"
                 @click="toggleExpand(order.id)"
               >
-                <td class="w-32 px-4 py-2 text-sm font-semibold text-slate-700 text-center">
+                <!-- checkbox เลือกแถว -->
+                <td
+                  v-if="selectable"
+                  class="w-10 px-4 py-2 text-center"
+                  @click.stop
+                >
+                  <input
+                    type="checkbox"
+                    class="h-4 w-4 rounded border-slate-300 text-emerald-500"
+                    :checked="isSelected(order.id)"
+                    @change.stop="toggleSelect(order.id)"
+                  />
+                </td>
+
+                <td
+                  class="w-32 px-4 py-2 text-sm font-semibold text-slate-700 text-center"
+                >
                   {{ order.orderCode }}
                 </td>
 
@@ -147,14 +182,14 @@
                   class="w-60 px-4 py-2 align-middle"
                 >
                   <div class="text-xs text-slate-700 leading-snug text-left">
-                    <div class="font-semibold text-center ">
-                      Name: {{ getCustomerName(order) || '-' }}
+                    <div class="font-semibold text-center">
+                      Name: {{ getCustomerName(order) || "-" }}
                     </div>
                     <div class="text-[11px] px-11 text-slate-500">
-                      Username: {{ getCustomerUsername(order) || '-' }}
+                      Username: {{ getCustomerUsername(order) || "-" }}
                     </div>
                     <div class="text-[11px] px-11 text-slate-500">
-                      เบอร์โทร: {{ getCustomerPhone(order) || '-' }}
+                      เบอร์โทร: {{ getCustomerPhone(order) || "-" }}
                     </div>
                   </div>
                 </td>
@@ -163,7 +198,9 @@
                   {{ order.totalItems }} รายการ {{ order.totalQuantity }} ชิ้น
                 </td>
 
-                <td class="w-32 px-4 py-2 text-sm font-semibold text-rose-500 text-center">
+                <td
+                  class="w-32 px-4 py-2 text-sm font-semibold text-rose-500 text-center"
+                >
                   ฿{{ order.totalPrice }}
                 </td>
 
@@ -176,11 +213,15 @@
                   </span>
                 </td>
 
-                <td class="w-10 px-2 py-2 text-slate-400 text-center align-middle">
+                <td
+                  class="w-10 px-2 py-2 text-slate-400 text-center align-middle"
+                >
                   <Icon
-                    :icon="expandedId === order.id
-                      ? 'mdi:chevron-up'
-                      : 'mdi:chevron-down'"
+                    :icon="
+                      expandedId === order.id
+                        ? 'mdi:chevron-up'
+                        : 'mdi:chevron-down'
+                    "
                     width="20"
                     height="20"
                   />
@@ -189,13 +230,8 @@
 
               <!-- แถวรายละเอียด -->
               <tr v-if="expandedId === order.id">
-                <td
-                  :colspan="hasCustomerColumn ? 6 : 5"
-                  class="pt-0"
-                >
-                  <div
-                    class="mt-3 rounded-2xl bg-slate-50/70 p-4 text-xs"
-                  >
+                <td :colspan="hasCustomerColumn ? 6 : 5" class="pt-0">
+                  <div class="mt-3 rounded-2xl bg-slate-50/70 p-4 text-xs">
                     <div
                       v-for="item in order.items"
                       :key="item.id"
@@ -222,7 +258,9 @@
                       </div>
                     </div>
 
-                    <div class="mt-3 text-right text-sm font-semibold text-emerald-600">
+                    <div
+                      class="mt-3 text-right text-sm font-semibold text-emerald-600"
+                    >
                       รวมทั้งหมด: ฿{{ order.totalPrice }}
                     </div>
                   </div>
@@ -237,8 +275,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { Icon } from "@iconify/vue";
+import AdminOrderAction from "./AdminOrderAction.vue";
 import type { OrderModel, OrderStatus } from "../models/order.model";
 
 const props = withDefaults(
@@ -262,6 +301,9 @@ const props = withDefaults(
       total?: string;
       status?: string;
     };
+    // เพิ่มสำหรับ admin
+    selectable?: boolean;
+    selectedIds?: number[];
   }>(),
   {
     labels: () => ({
@@ -279,8 +321,16 @@ const props = withDefaults(
       total: "ราคารวม",
       status: "สถานะ",
     }),
+    selectable: false,
+    selectedIds: () => [],
   }
 );
+
+const emit = defineEmits<{
+  (e: "update:selectedIds", value: number[]): void;
+  (e: "confirm-selected", ids: number[]): void;
+  (e: "reject-selected", ids: number[]): void;
+}>();
 
 const activeStatus = ref<"ALL" | OrderStatus>("ALL");
 const expandedId = ref<number | null>(null);
@@ -302,6 +352,55 @@ const filteredOrders = computed(() => {
     (o) => (o.status as string).toUpperCase() === activeStatus.value
   );
 });
+
+//  state การเลือก
+const selectedIds = ref<number[]>([...(props.selectedIds ?? [])]);
+
+watch(
+  () => props.selectedIds,
+  (val) => {
+    if (val) {
+      selectedIds.value = [...val];
+    }
+  }
+);
+
+const isSelected = (id: number) => selectedIds.value.includes(id);
+
+const allSelected = computed(
+  () =>
+    filteredOrders.value.length > 0 &&
+    filteredOrders.value.every((o) => selectedIds.value.includes(o.id))
+);
+
+const toggleSelect = (id: number) => {
+  if (isSelected(id)) {
+    selectedIds.value = selectedIds.value.filter((x) => x !== id);
+  } else {
+    selectedIds.value = [...selectedIds.value, id];
+  }
+  emit("update:selectedIds", selectedIds.value);
+};
+
+const toggleSelectAll = () => {
+  if (allSelected.value) {
+    selectedIds.value = [];
+  } else {
+    selectedIds.value = filteredOrders.value.map((o) => o.id);
+  }
+  emit("update:selectedIds", selectedIds.value);
+};
+
+const handleConfirmClick = () => {
+  if (selectedIds.value.length === 0) return;
+  emit("confirm-selected", selectedIds.value);
+};
+
+const handleRejectClick = () => {
+  if (selectedIds.value.length === 0) return;
+  emit("reject-selected", selectedIds.value);
+};
+
 
 // แปลง text ของ status
 const statusText = (status: OrderStatus | string) => {
@@ -327,27 +426,14 @@ const toggleExpand = (id: number) => {
 
 //ดึงข้อมูลผู้สั่งซื้อแบบแยก feild
 const getCustomerName = (order: any) => {
-  return (
-    order.customerName ??
-    order.user?.fullName ??
-    order.user?.name ??
-    ''
-  );
+  return order.customerName ?? order.user?.fullName ?? order.user?.name ?? "";
 };
 
 const getCustomerUsername = (order: any) => {
-  return (
-    order.user?.username ??
-    order.username ??
-    ''
-  );
+  return order.user?.username ?? order.username ?? "";
 };
 
 const getCustomerPhone = (order: any) => {
-  return (
-    order.user?.phone ??
-    order.phone ??
-    ''
-  );
+  return order.user?.phone ?? order.phone ?? "";
 };
 </script>
