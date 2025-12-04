@@ -80,6 +80,13 @@ const routes = [
         meta: { title: "เข้าสู่ระบบผู้ดูแล" },
         component: () => import("../views/admin/AdminLoginView.vue"),
       },
+    ],
+  },
+
+   {
+    path: "/admin",
+    component: () => import("../layouts/ShopLayout.vue"),
+    children: [
       {
         path: "order",
         name: "AdminOrderView",
@@ -88,6 +95,7 @@ const routes = [
       },
     ],
   },
+
 ];
 
 const router = createRouter({
