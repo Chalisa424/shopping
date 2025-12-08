@@ -93,7 +93,7 @@
     </div>
 
     <!-- เนื้อหา -->
-    <div class="px-2 md:px-4 pb-4 pt-2">
+    <div class="px-2 md:px-2 pb-4 pt-2">
       <!-- Loading -->
       <div
         v-if="loadingComputed"
@@ -142,7 +142,7 @@
               <!-- ผู้สั่งซื้อ -->
               <th
                 v-if="hasCustomerColumn"
-                class="w-[28%] px-4 py-2 text-center"
+                class="w-[20%] px-4 py-2 text-center"
               >
                 {{ columnLabelsComputed.customer }}
               </th>
@@ -158,7 +158,7 @@
               </th>
 
               <!-- สถานะ -->
-              <th class="w-[16%] px-4 py-2 text-center">
+              <th class="w-[20%] px-4 py-2 text-center">
                 {{ columnLabelsComputed.status }}
               </th>
 
@@ -203,10 +203,10 @@
                     <div class="font-semibold text-center">
                       Name: {{ getCustomerName(order) || "-" }}
                     </div>
-                    <div class="text-[11px] px-11 text-slate-500">
+                    <div class="text-[11px] px-16 text-slate-500">
                       Username: {{ getCustomerUsername(order) || "-" }}
                     </div>
-                    <div class="text-[11px] px-11 text-slate-500">
+                    <div class="text-[11px] px-16 text-slate-500">
                       เบอร์โทร: {{ getCustomerPhone(order) || "-" }}
                     </div>
                   </div>

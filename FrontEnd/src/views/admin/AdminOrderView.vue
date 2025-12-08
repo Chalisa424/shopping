@@ -1,8 +1,6 @@
+<!-- src/views/admin/AdminOrderView.vue -->
 <template>
-  <div class="mx-auto max-w-6xl px-4 py-8">
-    <!-- navbar -->
-    <navbar :cart-count="cartCount" />
-
+  <div class="mx-auto max-w-6xl">
     <!-- ใช้ component กลางสำหรับรายการสั่งซื้อ (เวอร์ชัน Admin) -->
     <AdminOrderList
       title="จัดการการคำสั่งซื้อ"
@@ -40,7 +38,7 @@
       @confirm="handleAdminStatusConfirm"
     />
 
-    <!-- Popup หลังสั่งซื้อ -->
+    <!-- Popup หลังสั่งซื้อ (ถ้าอนาคตอยากใช้ query success ก็ยังใช้ได้) -->
     <OrderSuccessPopup
       :show="showOrderPopup"
       :title-text="popupTitle"
@@ -52,10 +50,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import navbar from "../../components/navbar.vue";
-import { cartStore } from "../../stores/cart.store";
 import type { OrderModel } from "../../models/order.model";
 import {
   fetchAdminOrders,
@@ -78,7 +74,6 @@ const mapApiStatusToFE = (status: string | null | undefined): FEOrderStatus => {
   return "PENDING";
 };
 
-
 const orders = ref<OrderModel[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
@@ -86,19 +81,16 @@ const error = ref<string | null>(null);
 // id ของ order checkbox
 const selectedIds = ref<number[]>([]);
 
-// popup หลังสั่งซื้อสำเร็จ (ของเดิม)
+// popup หลังสั่งซื้อสำเร็จ (ถ้าใช้ query success)
 const showOrderPopup = ref(false);
 const popupTitle = ref("สั่งซื้อสินค้าเรียบร้อย");
 const popupDetail = ref("");
 
-// popup ยืนยันเปลี่ยนสถานะ (ใหม่)
+// popup ยืนยันเปลี่ยนสถานะ
 const showAdminStatus = ref(false);
 const adminStatusMode = ref<"CONFIRM" | "REJECT">("CONFIRM");
 
 const route = useRoute();
-const cart = cartStore();
-
-const cartCount = computed(() => cart.totalQuantity);
 
 // ดึง order แล้วคำนวณ field ต่าง ๆ
 const loadOrders = async () => {
@@ -172,12 +164,10 @@ const handleAdminStatusConfirm = async () => {
     adminStatusMode.value === "CONFIRM" ? "CONFIRMED" : "REJECTED";
 
   try {
-    // ยิง API เปลี่ยนสถานะทุกอันที่เลือก
     await Promise.all(
       selectedIds.value.map((id) => updateOrderStatus(id, status))
     );
 
-    // รีเฟรชรายการ + เคลียร์ checkbox + ปิด popup
     await loadOrders();
     selectedIds.value = [];
     showAdminStatus.value = false;
@@ -187,9 +177,9 @@ const handleAdminStatusConfirm = async () => {
 };
 
 onMounted(async () => {
-
   await loadOrders();
 
+  // ถ้ามีการ redirect มาหน้้านี้พร้อม query success ก็ยังแสดง popup ได้
   if (route.query.success === "1") {
     const items = route.query.items ?? "";
     popupDetail.value =
@@ -200,4 +190,3 @@ onMounted(async () => {
   }
 });
 </script>
-

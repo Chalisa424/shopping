@@ -65,36 +65,36 @@ const routes = [
     ],
   },
 
-  // Admin
-  {
-    path: "/admin",
-    component: () => import("../layouts/AdminLayout.vue"),
-    children: [
-      {
-        path: "",
-        redirect: { name: "AdminLoginView" },
-      },
-      {
-        path: "Login",
-        name: "AdminLoginView",
-        meta: { title: "เข้าสู่ระบบผู้ดูแล" },
-        component: () => import("../views/admin/AdminLoginView.vue"),
-      },
-    ],
-  },
+{
+  path: "/admin",
+  component: () => import("../layouts/AdminLayout.vue"),
+  children: [
+    {
+      path: "",
+      redirect: { name: "AdminLoginView" },
+    },
+    {
+      path: "Login",
+      name: "AdminLoginView",
+      meta: { title: "เข้าสู่ระบบผู้ดูแล" },
+      component: () => import("../views/admin/AdminLoginView.vue"),
+    },
+  ],
+},
 
-   {
-    path: "/admin",
-    component: () => import("../layouts/ShopLayout.vue"),
-    children: [
-      {
-        path: "orders",
-        name: "AdminOrderView",
-        meta: { title: "จัดการสินค้า" },
-        component: () => import("../views/admin/AdminOrderView.vue"),
-      },
-    ],
-  },
+// Admin main 
+{
+  path: "/admin",
+  component: () => import("../layouts/AdminOrderLayout.vue"),
+  children: [
+    {
+      path: "orders",
+      name: "AdminOrderView",
+      meta: { title: "จัดการการสั่งซื้อ" },
+      component: () => import("../views/admin/AdminOrderView.vue"),
+    },
+  ],
+},
 
 ];
 
