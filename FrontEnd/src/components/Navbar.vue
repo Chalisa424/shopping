@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="fixed top-0 left-0 right-0 z-20 bg-white/80 backdrop-blur border-b border-slate-200"
+    class="fixed top-0 left-0 right-0 z-20 bg-white/80 py-1 backdrop-blur border-b border-slate-200"
   >
     <div class="mx-auto flex max-w-[90rem] items-center justify-between px-4 py-3">
       <!-- Logo -->
