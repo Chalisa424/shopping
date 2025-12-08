@@ -12,65 +12,75 @@
       <div
         class="flex overflow-hidden rounded-2xl bg-slate-50 text-xs md:text-sm font-medium text-slate-500"
       >
-    <button
-      type="button"
-      class="flex-1 py-2 text-center transition"
-      :class="activeStatus === 'ALL'
-        ? 'bg-emerald-500 text-white'
-        : 'hover:bg-slate-100'"
-      @click="activeStatus = 'ALL'"
-    >
-      {{ labelsComputed.all }}
-    </button>
+        <button
+          type="button"
+          class="flex-1 py-2 text-center transition"
+          :class="
+            activeStatus === 'ALL'
+              ? 'bg-emerald-500 text-white'
+              : 'hover:bg-slate-100'
+          "
+          @click="activeStatus = 'ALL'"
+        >
+          {{ labelsComputed.all }}
+        </button>
 
-    <!-- รอการยืนยัน -->
-    <button
-      type="button"
-      class="flex-1 py-2 text-center transition"
-      :class="activeStatus === 'PENDING'
-        ? 'bg-emerald-500 text-white'
-        : 'hover:bg-slate-100'"
-      @click="activeStatus = 'PENDING'"
-    >
-      {{ labelsComputed.pending }}
-    </button>
+        <!-- รอการยืนยัน -->
+        <button
+          type="button"
+          class="flex-1 py-2 text-center transition"
+          :class="
+            activeStatus === 'PENDING'
+              ? 'bg-emerald-500 text-white'
+              : 'hover:bg-slate-100'
+          "
+          @click="activeStatus = 'PENDING'"
+        >
+          {{ labelsComputed.pending }}
+        </button>
 
-    <!-- ยืนยันคำสั่งซื้อ -->
-    <button
-      type="button"
-      class="flex-1 py-2 text-center transition"
-      :class="activeStatus === 'CONFIRMED'
-        ? 'bg-emerald-500 text-white'
-        : 'hover:bg-slate-100'"
-      @click="activeStatus = 'CONFIRMED'"
-    >
-      {{ labelsComputed.confirmed }}
-    </button>
+        <!-- ยืนยันคำสั่งซื้อ -->
+        <button
+          type="button"
+          class="flex-1 py-2 text-center transition"
+          :class="
+            activeStatus === 'CONFIRMED'
+              ? 'bg-emerald-500 text-white'
+              : 'hover:bg-slate-100'
+          "
+          @click="activeStatus = 'CONFIRMED'"
+        >
+          {{ labelsComputed.confirmed }}
+        </button>
 
-    <!-- ปฏิเสธคำสั่งซื้อ -->
-    <button
-      type="button"
-      class="flex-1 py-2 text-center transition"
-      :class="activeStatus === 'REJECT'
-        ? 'bg-emerald-500 text-white'
-        : 'hover:bg-slate-100'"
-      @click="activeStatus = 'REJECT'"
-    >
-      {{ labelsComputed.refuse }}
-    </button>
+        <!-- ปฏิเสธคำสั่งซื้อ -->
+        <button
+          type="button"
+          class="flex-1 py-2 text-center transition"
+          :class="
+            activeStatus === 'REJECT'
+              ? 'bg-emerald-500 text-white'
+              : 'hover:bg-slate-100'
+          "
+          @click="activeStatus = 'REJECT'"
+        >
+          {{ labelsComputed.refuse }}
+        </button>
 
-    <!-- ยกเลิกคำสั่งซื้อ -->
-    <button
-      type="button"
-      class="flex-1 py-2 text-center transition"
-      :class="activeStatus === 'CANCELLED'
-        ? 'bg-emerald-500 text-white'
-        : 'hover:bg-slate-100'"
-      @click="activeStatus = 'CANCELLED'"
-    >
-      {{ labelsComputed.cancelled }}
-    </button>
-  </div>
+        <!-- ยกเลิกคำสั่งซื้อ -->
+        <button
+          type="button"
+          class="flex-1 py-2 text-center transition"
+          :class="
+            activeStatus === 'CANCELLED'
+              ? 'bg-emerald-500 text-white'
+              : 'hover:bg-slate-100'
+          "
+          @click="activeStatus = 'CANCELLED'"
+        >
+          {{ labelsComputed.cancelled }}
+        </button>
+      </div>
       <!-- แถบปุ่มยืนยัน/ปฏิเสธ -->
       <div v-if="selectable" class="mt-4">
         <AdminOrderAction
@@ -115,7 +125,7 @@
           <thead class="bg-slate-50 text-slate-500 font-semibold">
             <tr>
               <!--  หัว checkbox -->
-              <th v-if="selectable" class="w-10 px-4 py-2 text-center">
+              <th v-if="selectable" class="w-[6%] px-4 py-2 text-center">
                 <input
                   type="checkbox"
                   class="h-4 w-4 rounded border-slate-300 text-emerald-500"
@@ -125,39 +135,40 @@
               </th>
 
               <!-- รหัสการสั่งซื้อ -->
-              <th class="w-32 px-4 py-2 text-center">
+              <th class="w-[16%] px-4 py-2 text-center">
                 {{ columnLabelsComputed.code }}
               </th>
 
               <!-- ผู้สั่งซื้อ -->
-              <th v-if="hasCustomerColumn" class="w-60 px-4 py-2 text-center">
+              <th
+                v-if="hasCustomerColumn"
+                class="w-[28%] px-4 py-2 text-center"
+              >
                 {{ columnLabelsComputed.customer }}
               </th>
 
               <!-- จำนวนสินค้า -->
-              <th class="w-40 px-4 py-2 text-center">
+              <th class="w-[18%] px-4 py-2 text-center">
                 {{ columnLabelsComputed.items }}
               </th>
 
               <!-- ราคารวม -->
-              <th class="w-32 px-4 py-2 text-center">
+              <th class="w-[16%] px-4 py-2 text-center">
                 {{ columnLabelsComputed.total }}
               </th>
 
               <!-- สถานะ -->
-              <th class="px-4 py-2 text-center">
+              <th class="w-[16%] px-4 py-2 text-center">
                 {{ columnLabelsComputed.status }}
               </th>
 
               <!-- toggle icon -->
-              <th class="w-10 px-2 py-2"></th>
+              <th class="w-[6%] px-2 py-2"></th>
             </tr>
           </thead>
 
-          <!-- แถว summary + แถวรายละเอียด -->
           <tbody>
             <template v-for="order in filteredOrders" :key="order.id">
-              <!-- แถว summary -->
               <tr
                 class="cursor-pointer hover:bg-slate-50 transition border-b border-slate-100"
                 @click="toggleExpand(order.id)"
@@ -165,7 +176,7 @@
                 <!-- checkbox เลือกแถว -->
                 <td
                   v-if="selectable"
-                  class="w-10 px-4 py-2 text-center"
+                  class="w-[6%] px-4 py-2 text-center"
                   @click.stop
                 >
                   <input
@@ -176,8 +187,9 @@
                   />
                 </td>
 
+                <!-- รหัสการสั่งซื้อ -->
                 <td
-                  class="w-32 px-4 py-2 text-sm font-semibold text-slate-700 text-center"
+                  class="w-[16%] px-4 py-2 text-sm font-semibold text-slate-700 text-center"
                 >
                   {{ order.orderCode }}
                 </td>
@@ -185,7 +197,7 @@
                 <!-- ผู้สั่งซื้อ -->
                 <td
                   v-if="hasCustomerColumn"
-                  class="w-60 px-4 py-2 align-middle"
+                  class="w-[28%] px-4 py-2 align-middle"
                 >
                   <div class="text-xs text-slate-700 leading-snug text-left">
                     <div class="font-semibold text-center">
@@ -200,17 +212,22 @@
                   </div>
                 </td>
 
-                <td class="w-40 px-4 py-2 text-xs text-slate-500 text-center">
+                <!-- จำนวนสินค้า -->
+                <td
+                  class="w-[18%] px-4 py-2 text-xs text-slate-500 text-center"
+                >
                   {{ order.totalItems }} รายการ {{ order.totalQuantity }} ชิ้น
                 </td>
 
+                <!-- ราคารวม -->
                 <td
-                  class="w-32 px-4 py-2 text-sm font-semibold text-rose-500 text-center"
+                  class="w-[16%] px-4 py-2 text-sm font-semibold text-rose-500 text-center"
                 >
                   ฿{{ order.totalPrice }}
                 </td>
 
-                <td class="px-4 py-2 text-center">
+                <!-- สถานะ -->
+                <td class="w-[16%] px-4 py-2 text-center">
                   <span
                     class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
                     :class="statusBadgeClass(order.status)"
@@ -219,8 +236,9 @@
                   </span>
                 </td>
 
+                <!-- toggle icon -->
                 <td
-                  class="w-10 px-2 py-2 text-slate-400 text-center align-middle"
+                  class="w-[6%] px-2 py-2 text-slate-400 text-center align-middle"
                 >
                   <Icon
                     :icon="
@@ -317,7 +335,7 @@ const props = withDefaults(
       all: "ทั้งหมด",
       pending: "รอการยืนยันคำสั่งซื้อ",
       confirmed: "ยืนยันคำสั่งซื้อ",
-      refuse:"ปฏิเสธการสั่งซื้อ",
+      refuse: "ปฏิเสธการสั่งซื้อ",
       cancelled: "ยกเลิกคำสั่งซื้อ",
       emptyText: "ยังไม่มีรายการสั่งซื้อ",
       loadingText: "กำลังโหลดรายการสั่งซื้อ...",
@@ -408,7 +426,6 @@ const handleRejectClick = () => {
   if (selectedIds.value.length === 0) return;
   emit("reject-selected", selectedIds.value);
 };
-
 
 // แปลง text ของ status
 const statusText = (status: OrderStatus | string) => {

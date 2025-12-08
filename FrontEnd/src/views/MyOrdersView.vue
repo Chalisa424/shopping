@@ -28,7 +28,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import navbar from "../components/navbar.vue";
 import { cartStore } from "../stores/cart.store";
-import type { OrderModel } from "../models/order.model";
+import type { OrderModel, OrderStatus } from "../models/order.model";
 import { fetchMyOrders } from "../services/orders.service";
 import OrderSuccessPopup from "../components/OrderSuccessPopup.vue";
 import { authStore } from "../stores/auth.store";
@@ -46,6 +46,18 @@ const route = useRoute();
 const cart = cartStore();
 
 const cartCount = computed(() => cart.totalQuantity);
+
+/** แปลงสถานะจาก API -> รูปแบบที่หน้าเว็บใช้ */
+const mapApiStatus = (apiStatus: string | null | undefined): OrderStatus => {
+  const s = (apiStatus ?? "").toLowerCase();
+
+  if (s === "pending") return "PENDING";
+  if (s === "confirm" || s === "confirmed") return "CONFIRMED";
+  if (s === "reject" || s === "rejected") return "REJECT";
+  if (s === "cancel" || s === "cancelled") return "CANCELLED";
+
+  return "PENDING";
+};
 
 // ดึง order แล้วคำนวณ field 
 const loadOrders = async () => {
@@ -71,7 +83,7 @@ const loadOrders = async () => {
       return {
         id: o.id,
         orderCode: String(o.id).padStart(6, "0"),
-        status: (o.status ?? "PENDING").toUpperCase(),
+        status: mapApiStatus(o.status),        
         totalItems,
         totalQuantity,
         totalPrice,

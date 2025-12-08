@@ -65,6 +65,20 @@ import OrderSuccessPopup from "../../components/OrderSuccessPopup.vue";
 import AdminOrderList from "../../components/OrderList.vue";
 import AdminOrderStatus from "../../components/AdminOrderStatus.vue";
 
+type FEOrderStatus = "PENDING" | "CONFIRMED" | "REJECT" | "CANCELLED";
+
+const mapApiStatusToFE = (status: string | null | undefined): FEOrderStatus => {
+  const s = (status ?? "").toLowerCase();
+
+  if (s === "pending") return "PENDING";
+  if (s === "confirm" || s === "confirmed") return "CONFIRMED";
+  if (s === "reject" || s === "rejected") return "REJECT";
+  if (s === "cancel" || s === "cancelled") return "CANCELLED";
+
+  return "PENDING";
+};
+
+
 const orders = ref<OrderModel[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
@@ -110,7 +124,7 @@ const loadOrders = async () => {
       return {
         id: o.id,
         orderCode: String(o.id).padStart(6, "0"),
-        status: (o.status ?? "PENDING").toUpperCase(),
+        status: mapApiStatusToFE(o.status),
         totalItems,
         totalQuantity,
         totalPrice,
