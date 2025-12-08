@@ -31,7 +31,7 @@
       @reject-selected="handleRejectSelected"
     />
 
-    <!-- popup ยืนยันเปลี่ยนสถานะ (ใช้หน้าแบบในรูปตัวอย่างที่ 2) -->
+    <!-- popup ยืนยันเปลี่ยนสถานะ -->
     <AdminOrderStatus
       :show="showAdminStatus"
       :mode="adminStatusMode"
@@ -62,7 +62,7 @@ import {
   updateOrderStatus,
 } from "../../services/orders.service";
 import OrderSuccessPopup from "../../components/OrderSuccessPopup.vue";
-import AdminOrderList from "../../components/AdminOrderList.vue";
+import AdminOrderList from "../../components/OrderList.vue";
 import AdminOrderStatus from "../../components/AdminOrderStatus.vue";
 
 const orders = ref<OrderModel[]>([]);

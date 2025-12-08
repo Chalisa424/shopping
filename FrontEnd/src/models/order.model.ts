@@ -1,4 +1,4 @@
-export type OrderStatus = "PENDING" | "CONFIRMED" | "REJECTED" | "CANCELLED";
+export type OrderStatus = "PENDING" | "CONFIRMED" | "REJECT" | "CANCELLED";
 
 export interface OrderItemModel {
   id: number;

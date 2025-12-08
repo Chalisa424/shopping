@@ -51,10 +51,10 @@
     <button
       type="button"
       class="flex-1 py-2 text-center transition"
-      :class="activeStatus === 'REJECTED'
+      :class="activeStatus === 'REJECT'
         ? 'bg-emerald-500 text-white'
         : 'hover:bg-slate-100'"
-      @click="activeStatus = 'REJECTED'"
+      @click="activeStatus = 'REJECT'"
     >
       {{ labelsComputed.refuse }}
     </button>
@@ -415,8 +415,10 @@ const statusText = (status: OrderStatus | string) => {
   const upper = status.toUpperCase();
   if (upper === "PENDING") return labelsComputed.value.pending;
   if (upper === "CONFIRMED") return labelsComputed.value.confirmed;
-  if (upper === "REJECTED") return labelsComputed.value.refuse;
-  if (upper === "CANCELLED") return labelsComputed.value.cancelled;
+  if (upper === "REJECT" || upper === "REJECTED")
+    return labelsComputed.value.refuse;
+  if (upper === "CANCELLED" || upper === "CANCEL")
+    return labelsComputed.value.cancelled;
   return status;
 };
 
@@ -425,8 +427,10 @@ const statusBadgeClass = (status: OrderStatus | string) => {
   const upper = status.toUpperCase();
   if (upper === "PENDING") return "bg-amber-100 text-amber-700";
   if (upper === "CONFIRMED") return "bg-emerald-100 text-emerald-700";
-  if (upper === "REJECTED") return "bg-rose-100 text-rose-700";
-  if (upper === "CANCELLED") return "bg-slate-200 text-slate-700";
+  if (upper === "REJECT" || upper === "REJECTED")
+    return "bg-rose-100 text-rose-700";
+  if (upper === "CANCELLED" || upper === "CANCEL")
+    return "bg-slate-200 text-slate-700";
   return "bg-slate-100 text-slate-600";
 };
 

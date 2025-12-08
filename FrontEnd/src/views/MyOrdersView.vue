@@ -32,7 +32,7 @@ import type { OrderModel } from "../models/order.model";
 import { fetchMyOrders } from "../services/orders.service";
 import OrderSuccessPopup from "../components/OrderSuccessPopup.vue";
 import { authStore } from "../stores/auth.store";
-import OrderListCard from "../components/OrderListCard.vue";
+import OrderListCard from "../components/OrderList.vue";
 
 const orders = ref<OrderModel[]>([]);
 const loading = ref(false);

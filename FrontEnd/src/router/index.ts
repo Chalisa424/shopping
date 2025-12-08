@@ -88,7 +88,7 @@ const routes = [
     component: () => import("../layouts/ShopLayout.vue"),
     children: [
       {
-        path: "order",
+        path: "orders",
         name: "AdminOrderView",
         meta: { title: "จัดการสินค้า" },
         component: () => import("../views/admin/AdminOrderView.vue"),
