@@ -1,199 +1,340 @@
 <template>
   <div class="mx-auto max-w-6xl px-4 py-8">
     <!-- กล่องหลัก -->
-    <div
-      class="rounded-3xl bg-white shadow-lg overflow-hidden border border-slate-100"
+    <section
+      class="rounded-3xl bg-white shadow-lg border border-slate-100 overflow-hidden"
     >
-      <!-- หัวกล่อง -->
-      <div
-        class="flex flex-col gap-3 border-b bg-white px-6 py-4 md:flex-row md:items-center md:justify-between"
+      <!-- แถวบน: ชื่อ + ปุ่มเพิ่ม -->
+      <header
+        class="flex flex-col gap-3 px-6 py-4 md:flex-row md:items-center md:justify-between"
       >
         <h1 class="text-lg md:text-xl font-bold text-slate-900">
           จัดการสินค้า
         </h1>
 
-        <!-- ช่องค้นหา + ปุ่มเพิ่มสินค้า -->
-        <div class="flex flex-col gap-3 md:flex-row md:items-center">
-          <!-- search -->
-          <div
-            class="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-1.5"
-          >
-            <Icon
-              icon="mdi:magnify"
-              width="18"
-              height="18"
-              class="text-slate-400"
-            />
-            <input
-              v-model="search"
-              type="text"
-              placeholder="ค้นหาสินค้า"
-              class="w-48 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none md:w-64"
-            />
-          </div>
+        <button
+          type="button"
+          class="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-600"
+          @click="onAddProduct"
+        >
+          <Icon icon="mdi:plus" width="18" height="18" />
+          เพิ่มสินค้าใหม่
+        </button>
+      </header>
 
-          <!-- ปุ่มเพิ่มสินค้าใหม่ -->
-          <button
-            type="button"
-            class="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-600"
-            @click="handleCreate"
+      <!-- แถวค้นหา -->
+      <div class=" border-b border-slate-100 px-6 pb-4">
+        <SearchBar
+          v-model="searchQuery"
+          placeholder="ค้นหาสินค้า"
+          @search="handleSearchClick"
+        />
+      </div>
+
+      <!-- เนื้อหา -->
+      <div class="px-4 pb-4 pt-2">
+        <!-- Loading -->
+        <div
+          v-if="loading"
+          class="py-10 text-center text-sm text-slate-500"
+        >
+          กำลังโหลดรายการสินค้า...
+        </div>
+
+        <!-- Error -->
+        <div
+          v-else-if="error"
+          class="py-10 text-center text-sm text-rose-500"
+        >
+          {{ error }}
+        </div>
+
+        <!-- ไม่มีข้อมูล -->
+        <div
+          v-else-if="products.length === 0"
+          class="py-10 text-center text-sm text-slate-500"
+        >
+          ยังไม่มีรายการสินค้า
+        </div>
+
+        <!-- ตารางสินค้า -->
+        <div v-else>
+          <table
+            class="mt-2 w-full table-auto text-sm text-slate-700"
           >
-            <Icon icon="mdi:plus" width="18" height="18" />
-            เพิ่มสินค้าใหม่
-          </button>
+            <thead
+              class="bg-slate-50 text-xs font-semibold text-slate-500"
+            >
+              <tr>
+                <th
+                  class="w-44 px-4 py-2 text-left whitespace-nowrap"
+                >
+                  รูปภาพสินค้า
+                </th>
+                <th class="w-[320px] px-4 py-2 text-left">
+                  ชื่อสินค้า
+                </th>
+                <th class="w-24 px-4 py-2 text-right">
+                  ราคา
+                </th>
+                <th
+                  class="w-32 px-4 py-2 text-right whitespace-nowrap"
+                >
+                  จำนวนคงเหลือ
+                </th>
+                <th class="w-32 px-4 py-2 text-left">
+                  หมวดหมู่
+                </th>
+                <th class="w-32 px-4 py-2 text-center">
+                  การจัดการ
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                v-for="product in paginatedProducts"
+                :key="product.id"
+                class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/60"
+              >
+                <!-- รูปสินค้า-->
+                <td class="px-4 py-3 align-middle">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-50 border border-slate-100 overflow-hidden"
+                    >
+                      <img
+                        :src="product.imageUrl"
+                        :alt="product.name"
+                        class="h-16 w-16 object-contain"
+                      />
+                    </div>
+                  </div>
+                </td>
+
+                <!-- ชื่อ + รหัส -->
+                <td class="px-4 py-3 align-middle">
+                  <div class="flex flex-col">
+                    <span
+                      class="text-sm font-semibold text-slate-800 capitalize"
+                    >
+                      {{ product.name }}
+                    </span>
+                    <span
+                      v-if="product.code"
+                      class="text-xs text-slate-400"
+                    >
+                      รหัส: {{ product.code }}
+                    </span>
+                  </div>
+                </td>
+
+                <!-- ราคา -->
+                <td class="px-4 py-3 text-right align-middle">
+                  <span class="font-semibold text-rose-500">
+                    ฿{{ product.price }}
+                  </span>
+                </td>
+
+                <!-- stock -->
+                <td
+                  class="px-4 py-3 text-right whitespace-nowrap align-middle"
+                >
+                  {{ product.stock }} ชิ้น
+                </td>
+
+                <!-- category -->
+                <td class="px-4 py-3 text-left align-middle">
+                  {{ product.category }}
+                </td>
+
+                <!-- การจัดการ -->
+                <td class="px-4 py-3 text-center align-middle">
+                  <div class="flex items-center justify-center gap-2">
+                    <button
+                      type="button"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-500 hover:bg-amber-100"
+                      @click="onEditProduct(product)"
+                    >
+                      <Icon
+                        icon="mdi:pencil"
+                        width="16"
+                        height="16"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 text-rose-500 hover:bg-rose-100"
+                      @click="onDeleteProduct(product)"
+                    >
+                      <Icon
+                        icon="mdi:trash"
+                        width="16"
+                        height="16"
+                      />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <div
+            class="mt-4 flex items-center justify-between gap-2 text-xs text-slate-500"
+          >
+            <div>
+              แสดง
+              {{ startItemIndex + 1 }}
+              -
+              {{ endItemIndex }}
+              จาก
+              {{ products.length }} รายการ
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                class="rounded-full border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                :disabled="currentPage === 1"
+                @click="goPrevPage"
+              >
+                ก่อนหน้า
+              </button>
+
+              <button
+                v-for="page in totalPages"
+                :key="page"
+                type="button"
+                class="h-7 w-7 rounded-full text-xs font-medium flex items-center justify-center"
+                :class="
+                  page === currentPage
+                    ? 'bg-emerald-500 text-white'
+                    : 'text-slate-600 hover:bg-slate-100'
+                "
+                @click="goToPage(page)"
+              >
+                {{ page }}
+              </button>
+
+              <button
+                type="button"
+                class="rounded-full border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                :disabled="currentPage === totalPages"
+                @click="goNextPage"
+              >
+                ถัดไป
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-
-      <!-- ตารางสินค้า -->
-      <div class="px-4 pb-4 pt-2">
-        <table class="mt-2 w-full text-left text-xs md:text-sm text-slate-700">
-          <thead class="bg-slate-50 text-slate-500 font-semibold">
-            <tr>
-              <th class="w-24 px-4 py-2">รูปภาพสินค้า</th>
-              <th class="px-4 py-2">ชื่อสินค้า</th>
-              <th class="w-24 px-4 py-2 text-right">ราคา</th>
-              <th class="w-32 px-4 py-2 text-center">จำนวนคงเหลือ</th>
-              <th class="w-32 px-4 py-2 text-center">หมวดหมู่</th>
-              <th class="w-28 px-4 py-2 text-center">การจัดการ</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <!-- ถ้าไม่มีสินค้า -->
-            <tr v-if="filteredProducts.length === 0">
-              <td colspan="6" class="px-4 py-6 text-center text-slate-500">
-                ยังไม่มีสินค้า หรือไม่พบสินค้าที่ค้นหา
-              </td>
-            </tr>
-
-            <!-- แสดงรายการสินค้า -->
-            <tr
-              v-for="product in filteredProducts"
-              :key="product.id"
-              class="border-b border-slate-100 hover:bg-slate-50/70"
-            >
-              <!-- รูป -->
-              <td class="px-4 py-3">
-                <img
-                  :src="product.image"
-                  :alt="product.name"
-                  class="h-14 w-14 rounded-xl bg-slate-50 object-contain"
-                />
-              </td>
-
-              <!-- ชื่อ -->
-              <td class="px-4 py-3 align-top">
-                <div class="font-semibold text-slate-800">
-                  {{ product.name }}
-                </div>
-                <div class="text-[11px] text-slate-500">
-                  รหัส: {{ product.code }}
-                </div>
-              </td>
-
-              <!-- ราคา -->
-              <td class="px-4 py-3 text-right font-semibold text-rose-500">
-                ฿{{ product.price }}
-              </td>
-
-              <!-- คงเหลือ -->
-              <td class="px-4 py-3 text-center">
-                {{ product.stock }} ชิ้น
-              </td>
-
-              <!-- หมวดหมู่ -->
-              <td class="px-4 py-3 text-center">
-                {{ product.category }}
-              </td>
-
-              <!-- ปุ่มจัดการ -->
-              <td class="px-4 py-3">
-                <div class="flex items-center justify-center gap-2">
-                  <button
-                    type="button"
-                    class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-600 hover:bg-amber-100"
-                    @click.stop="handleEdit(product)"
-                  >
-                    <Icon icon="mdi:pencil" width="18" height="18" />
-                  </button>
-                  <button
-                    type="button"
-                    class="flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 text-rose-500 hover:bg-rose-100"
-                    @click.stop="handleDelete(product)"
-                  >
-                    <Icon icon="mdi:trash-can-outline" width="18" height="18" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
+    </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { Icon } from "@iconify/vue";
+import SearchBar from "../../components/searchBar.vue";
+import type { ProductModel } from "../../models/product.model";
+import { fetchAdminProducts } from "../../services/products.service";
 
-type AdminProduct = {
-  id: number;
-  code: string;
-  name: string;
-  image: string;
-  price: number;
-  stock: number;
-  category: string;
-};
+const products = ref<ProductModel[]>([]);
+const loading = ref(false);
+const error = ref<string | null>(null);
 
-// TODO: ไว้ต่อ API จริงภายหลัง ตอนนี้ใช้ mock data ให้เห็น layout ก่อน
-const products = ref<AdminProduct[]>([
-  {
-    id: 1,
-    code: "P001",
-    name: "bulbasaur",
-    image:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
-    price: 57,
-    stock: 10,
-    category: "Pokémon",
-  },
-  {
-    id: 2,
-    code: "P002",
-    name: "ivysaur",
-    image:
-      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png",
-    price: 73,
-    stock: 5,
-    category: "Pokémon",
-  },
-]);
+const searchQuery = ref("");
 
-const search = ref("");
+// ---------- Pagination state ----------
+const currentPage = ref(1);
+const pageSize = 10; // 10 รายการต่อหน้า
 
-const filteredProducts = computed(() => {
-  const q = search.value.trim().toLowerCase();
-  if (!q) return products.value;
-  return products.value.filter(
-    (p) =>
-      p.name.toLowerCase().includes(q) ||
-      p.code.toLowerCase().includes(q) ||
-      p.category.toLowerCase().includes(q)
-  );
+const totalPages = computed(() =>
+  products.value.length === 0
+    ? 1
+    : Math.ceil(products.value.length / pageSize)
+);
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * pageSize;
+  return products.value.slice(start, start + pageSize);
 });
 
-// handler ไว้ให้ต่อ dialog / แบบฟอร์มทีหลัง
-const handleCreate = () => {
-  console.log("create product");
+const startItemIndex = computed(
+  () => (currentPage.value - 1) * pageSize
+);
+
+const endItemIndex = computed(() =>
+  Math.min(startItemIndex.value + paginatedProducts.value.length, products.value.length)
+);
+
+// ---------- Load products ----------
+const loadProducts = async (q: string = "") => {
+  loading.value = true;
+  error.value = null;
+
+  try {
+    const data = await fetchAdminProducts(q);
+    products.value = data;
+    currentPage.value = 1; // reset หน้าเมื่อค้นหาใหม่
+  } catch (e) {
+    console.error(e);
+    error.value = "ไม่สามารถโหลดรายการสินค้าได้";
+  } finally {
+    loading.value = false;
+  }
 };
 
-const handleEdit = (product: AdminProduct) => {
-  console.log("edit product", product);
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+watch(
+  () => searchQuery.value,
+  (newVal) => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      loadProducts(newVal);
+    }, 400);
+  }
+);
+
+// ปุ่มค้นหาใน SearchBar
+const handleSearchClick = () => {
+  if (searchTimeout) clearTimeout(searchTimeout);
+  loadProducts(searchQuery.value);
 };
 
-const handleDelete = (product: AdminProduct) => {
-  console.log("delete product", product);
+// Pagination
+const goPrevPage = () => {
+  if (currentPage.value > 1) currentPage.value--;
 };
+
+const goNextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++;
+};
+
+const goToPage = (page: number) => {
+  if (page >= 1 && page <= totalPages.value) {
+    currentPage.value = page;
+  }
+};
+
+// ปุ่มเพิ่ม / แก้ไข / ลบ (ยังไม่ต่อ API)
+const onAddProduct = () => {
+  alert("ฟีเจอร์เพิ่มสินค้า ยังไม่ได้ทำ (ไว้ต่อทีหลังนะ)");
+};
+
+const onEditProduct = (product: ProductModel) => {
+  console.log("edit", product);
+  alert(`แก้ไขสินค้า: ${product.name} (ยังไม่ได้ทำหน้าแก้ไข)`);
+};
+
+const onDeleteProduct = (product: ProductModel) => {
+  console.log("delete", product);
+  alert(`ลบสินค้า: ${product.name} (ยังไม่ได้ต่อ API ลบ)`);
+};
+
+onMounted(() => {
+  loadProducts();
+});
 </script>
