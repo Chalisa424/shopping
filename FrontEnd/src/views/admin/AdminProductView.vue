@@ -15,7 +15,7 @@
         <button
           type="button"
           class="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-emerald-600"
-          @click="onAddProduct"
+          @click="openCreateModal"
         >
           <Icon icon="mdi:plus" width="18" height="18" />
           เพิ่มสินค้าใหม่
@@ -173,7 +173,13 @@
         @update:currentPage="(p) => (currentPage = p)"
         @update:pageSize="handlePageSizeChange"
       />
-    </div>
+    </div>  
+    <!-- เพิ่มสินค้าใหม่ -->
+    <AdminCreateProduct
+      v-if="showCreateModal"
+      @close="closeCreateModal"
+      @created="handleProductCreated"
+    />
   </div>
 </template>
 
@@ -185,6 +191,8 @@ import SearchBar from "../../components/searchBar.vue";
 import pagination from "../../components/pagination.vue";
 import type { ProductModel } from "../../models/product.model";
 import { fetchAdminProducts } from "../../services/products.service";
+import AdminCreateProduct from "../../components/AdminCreateProduct.vue";
+
 
 const products = ref<ProductModel[]>([]);
 const loading = ref(false);
@@ -222,31 +230,52 @@ const loadProducts = async (q = "") => {
 };
 
 // debounce search
-let searchTimeout: any = null;
-watch(searchQuery, (val) => {
-  if (searchTimeout) clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => loadProducts(val), 450);
-});
+let searchTimeout: ReturnType<typeof setTimeout> | null = null;
+
+watch(
+  () => searchQuery.value,
+  (newVal) => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => loadProducts(newVal), 400);
+  }
+);
 
 const handleSearchClick = () => {
   if (searchTimeout) clearTimeout(searchTimeout);
   loadProducts(searchQuery.value);
 };
 
-const handlePageSizeChange = (newSize: number) => {
-  pageSize.value = newSize;
+// pagination handlers
+const handlePageSizeChange = (size: number) => {
+  pageSize.value = size;
   currentPage.value = 1;
 };
 
-// actions (ยังไม่ต่อ backend)
-const onAddProduct = () => {
-  alert("ฟีเจอร์เพิ่มสินค้า ยังไม่ได้ทำ (ไว้ต่อทีหลังนะ)");
+// modal state
+const showCreateModal = ref(false);
+const openCreateModal = () => {
+  showCreateModal.value = true;
 };
-const onEditProduct = (p: ProductModel) => {
-  alert(`แก้ไขสินค้า: ${p.name} (ยังไม่ได้ทำหน้าแก้ไข)`);
+const closeCreateModal = () => {
+  showCreateModal.value = false;
 };
-const onDeleteProduct = (p: ProductModel) => {
-  alert(`ลบสินค้า: ${p.name} (ยังไม่ได้ต่อ API ลบ)`);
+
+// สร้างสินค้าใหม่สำเร็จ
+const handleProductCreated = (product: ProductModel) => {
+  // เติมหน้า current หรือจะ reload จาก API ก็ได้
+  products.value = [product, ...products.value];
+  closeCreateModal();
+};
+
+// ปุ่มแก้ไข / ลบ (ยังไม่ได้ทำ)
+const onEditProduct = (product: ProductModel) => {
+  console.log("edit", product);
+  alert(`แก้ไขสินค้า: ${product.name} (ยังไม่ได้ทำหน้าแก้ไข)`);
+};
+
+const onDeleteProduct = (product: ProductModel) => {
+  console.log("delete", product);
+  alert(`ลบสินค้า: ${product.name} (ยังไม่ได้ต่อ API ลบ)`);
 };
 
 onMounted(() => {
