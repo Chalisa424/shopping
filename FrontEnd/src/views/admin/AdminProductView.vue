@@ -163,7 +163,7 @@
       </div>
     </section>
 
-    <!-- Pagination ด้านนอกกล่อง -->
+    <!-- Pagination -->
     <div class="mt-4 flex justify-center">
       <pagination
         :current-page="currentPage"
