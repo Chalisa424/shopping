@@ -93,6 +93,12 @@ const routes = [
       meta: { title: "จัดการการสั่งซื้อ" },
       component: () => import("../views/admin/AdminOrderView.vue"),
     },
+    {
+      path: "products",
+      name: "AdminProductView",
+      meta: { title: "จัดการสินค้า" },
+      component: () => import("../views/admin/AdminProductView.vue"),
+    },
   ],
 },
 

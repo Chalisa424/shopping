@@ -26,10 +26,10 @@
 
       <!-- สินค้า -->
       <RouterLink
-        :to="{ name: 'ProductView' }"
+        :to="{ name: 'AdminProductView' }"
         class="flex items-center gap-3 rounded-xl px-3 py-2 transition"
         :class="
-          route.name === 'ProductView'
+          route.name === 'AdminProductView'
             ? 'bg-emerald-500 text-white'
             : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
         "
