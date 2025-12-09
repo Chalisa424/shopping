@@ -1,7 +1,7 @@
 <template>
   <!-- Search -->
     <div class="mb-6 flex justify-center">
-      <div class="relative w-full max-w-xl">
+      <div class="relative w-full max-w-6xl">
         <input
           :value="modelValue"
           @input="$emit('update:modelValue',($event.target as HTMLInputElement).value)"

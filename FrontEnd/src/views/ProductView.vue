@@ -73,7 +73,7 @@ import SearchBar from "../components/searchBar.vue";
 import { fetchPokemonPage } from "../services/pokemon.service";
 import type { PokemonModel } from "../models/pokemon.model";
 import { ref, computed, onMounted } from "vue";
-import navbar from "../components/navbar.vue";
+import Navbar from "../components/Navbar.vue";
 import pagination from "../components/pagination.vue";
 import { cartStore } from "../stores/cart.store";
 import CartPopup from "../components/CartPopup.vue"

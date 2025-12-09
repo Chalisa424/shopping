@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import navbar from "../components/navbar.vue";
+import Navbar from "../components/Navbar.vue";
 import { cartStore } from "../stores/cart.store";
 import type { OrderModel, OrderStatus } from "../models/order.model";
 import { fetchMyOrders } from "../services/orders.service";
