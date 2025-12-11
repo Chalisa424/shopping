@@ -6,7 +6,9 @@ import {
 } from "vue-router";
 
 const routes = [
-  // User Login
+
+
+  // User Login & Register
   {
     path: "/",
     component: () => import("../layouts/AuthLayout.vue"),
@@ -20,6 +22,12 @@ const routes = [
         name: "LoginView",
         meta: { title: "เข้าสู่ระบบ" },
         component: () => import("../views/loginView.vue"),
+      },
+      {
+        path: "register",
+        name: "RegisterView",
+        meta: { title: "สมัครสมาชิก" },
+        component: () => import("../views/RegisterView.vue"),
       },
     ],
   },
@@ -51,7 +59,7 @@ const routes = [
     ],
   },
 
-    // My Orders (User)
+  // My Orders (User)
   {
     path: "/my-orders",
     component: () => import("../layouts/ShopLayout.vue"),
@@ -65,43 +73,42 @@ const routes = [
     ],
   },
 
-{
-  path: "/admin",
-  component: () => import("../layouts/AdminLayout.vue"),
-  children: [
-    {
-      path: "",
-      redirect: { name: "AdminLoginView" },
-    },
-    {
-      path: "Login",
-      name: "AdminLoginView",
-      meta: { title: "เข้าสู่ระบบผู้ดูแล" },
-      component: () => import("../views/admin/AdminLoginView.vue"),
-    },
-  ],
-},
+  {
+    path: "/admin",
+    component: () => import("../layouts/AdminLayout.vue"),
+    children: [
+      {
+        path: "",
+        redirect: { name: "AdminLoginView" },
+      },
+      {
+        path: "Login",
+        name: "AdminLoginView",
+        meta: { title: "เข้าสู่ระบบผู้ดูแล" },
+        component: () => import("../views/admin/AdminLoginView.vue"),
+      },
+    ],
+  },
 
-// Admin main 
-{
-  path: "/admin",
-  component: () => import("../layouts/AdminOrderLayout.vue"),
-  children: [
-    {
-      path: "orders",
-      name: "AdminOrderView",
-      meta: { title: "จัดการการสั่งซื้อ" },
-      component: () => import("../views/admin/AdminOrderView.vue"),
-    },
-    {
-      path: "products",
-      name: "AdminProductView",
-      meta: { title: "จัดการสินค้า" },
-      component: () => import("../views/admin/AdminProductView.vue"),
-    },
-  ],
-},
-
+  // Admin main
+  {
+    path: "/admin",
+    component: () => import("../layouts/AdminOrderLayout.vue"),
+    children: [
+      {
+        path: "orders",
+        name: "AdminOrderView",
+        meta: { title: "จัดการการสั่งซื้อ" },
+        component: () => import("../views/admin/AdminOrderView.vue"),
+      },
+      {
+        path: "products",
+        name: "AdminProductView",
+        meta: { title: "จัดการสินค้า" },
+        component: () => import("../views/admin/AdminProductView.vue"),
+      },
+    ],
+  },
 ];
 
 const router = createRouter({

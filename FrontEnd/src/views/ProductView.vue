@@ -28,9 +28,8 @@
 
     <!-- Grid -->
     <div v-else class="grid gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-      <!-- {{ pokemons }} -->
       <pokemonCard
-        v-for="item in filteredPokemons"
+        v-for="item in paginatedPokemons"
         :key="item.id"
         :pokemon="item"
         @add-to-cart="handleAddToCart"
@@ -63,7 +62,6 @@
       @close="showCartPopup = false"
       @go-cart="handleGoCart"
     />
-
   </div>
 </template>
 
@@ -72,70 +70,88 @@ import pokemonCard from "../components/pokemonCard.vue";
 import SearchBar from "../components/searchBar.vue";
 import { fetchPokemonPage } from "../services/pokemon.service";
 import type { PokemonModel } from "../models/pokemon.model";
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import Navbar from "../components/Navbar.vue";
 import pagination from "../components/pagination.vue";
 import { cartStore } from "../stores/cart.store";
-import CartPopup from "../components/CartPopup.vue"
-import { useRouter } from "vue-router"
+import CartPopup from "../components/CartPopup.vue";
+import { useRouter } from "vue-router";
 
-const cart = cartStore()
+const cart = cartStore();
 
 const pokemons = ref<PokemonModel[]>([]);
 const loading = ref(false);
 const error = ref<string | null>(null);
 const search = ref("");
 
-const currentPage = ref(1)
-const pageSize = ref(20)
+// state pagination
+const currentPage = ref(1);
+const pageSize = ref(20);
 
-const totalItems = ref(200)
-const totalPages = computed(() =>
-  Math.max(1, Math.ceil(totalItems.value / pageSize.value))
-)
-
-const showCartPopup = ref(false)
-const lastAddedProduct = ref<PokemonModel | null>(null)
-const router = useRouter()
+const showCartPopup = ref(false);
+const lastAddedProduct = ref<PokemonModel | null>(null);
+const router = useRouter();
 
 const loadPage = async () => {
-  loading.value = true
-  error.value = null
+  loading.value = true;
+  error.value = null;
   try {
-    const pokemonsData = await fetchPokemonPage()
+    const pokemonsData = await fetchPokemonPage();
     pokemons.value = pokemonsData.map((p: any) => ({
       ...p,
-      image: p.imageUrl,          // map imageUrl → image
-      isOutofStock: p.stock === 0 // สร้าง field สำหรับปุ่ม
-    }))
-
+      image: p.imageUrl,
+      isOutofStock: p.stock === 0,
+    }));
   } catch (e) {
-    console.error(e)
-    error.value = 'ไม่สามารถโหลดรายการสินค้าได้'
+    console.error(e);
+    error.value = "ไม่สามารถโหลดรายการสินค้าได้";
   } finally {
-    loading.value = false
+    loading.value = false;
   }
-}
+};
 
-onMounted(loadPage)
+onMounted(loadPage);
 
-// เปลี่ยนหน้า / pageSize
-const handlePageChange = () => {
-  loadPage()
-}
-
+// 1) filter ตามคำค้น
 const filteredPokemons = computed(() => {
   const keyword = search.value.trim().toLowerCase();
-  if (!keyword) return pokemons.value
-  return pokemons.value.filter((p) =>
-  p.name.toLowerCase().includes(keyword));
+  if (!keyword) return pokemons.value;
+  return pokemons.value.filter((p) => p.name.toLowerCase().includes(keyword));
 });
+
+// 2) คำนวนจำนวนหน้า จากจำนวนที่กรองแล้ว
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(filteredPokemons.value.length / pageSize.value))
+);
+
+// 3) ตัดรายการให้แสดงเฉพาะของหน้าปัจจุบัน
+const paginatedPokemons = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value;
+  return filteredPokemons.value.slice(start, start + pageSize.value);
+});
+
+// ถ้าลบของ/ค้นหา แล้วจำนวนหน้าลดลง ให้ดึง currentPage กลับมาให้อยู่ในช่วง
+watch(totalPages, (newTotal) => {
+  if (currentPage.value > newTotal) {
+    currentPage.value = newTotal;
+  }
+});
+
+// เปลี่ยนหน้า / pageSize (ตอนนี้ไม่ต้อง fetch ใหม่แล้ว แค่ log ก็พอ)
+const handlePageChange = ({
+  page,
+  pageSize: newSize,
+}: {
+  page: number;
+  pageSize: number;
+}) => {
+  // ถ้าอยาก debug ดูก็ log ได้
+  console.log("change page", page, "size", newSize);
+};
 
 const lastAddedQuantity = computed(() => {
   if (!lastAddedProduct.value) return 0;
-  const item = cart.items.find(
-    (i) => i.id === lastAddedProduct.value!.id
-  );
+  const item = cart.items.find((i) => i.id === lastAddedProduct.value!.id);
   return item ? item.quantity : 0;
 });
 
@@ -154,9 +170,9 @@ const handleGoCart = () => {
   router.push("/cart");
 };
 
-const handleSearchClick = () =>{
-    console.log('search click:', search.value)
-}
-// จำนวนที่ส่งไป navbar
-const cartCount = computed(() => cart.totalQuantity)
+const handleSearchClick = () => {
+  console.log("search click:", search.value);
+};
+
+const cartCount = computed(() => cart.totalQuantity);
 </script>

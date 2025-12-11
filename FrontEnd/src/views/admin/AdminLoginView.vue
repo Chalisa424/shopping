@@ -20,7 +20,7 @@
             v-model="form.username"
             type="text"
             placeholder="Enter your username"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm
+            class="w-full rounded-lg border border-slate-500 px-3 py-2.5 text-sm
                    outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
           />
         </div>
@@ -35,7 +35,7 @@
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               placeholder="Enter your password"
-              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 pr-10 text-sm
+              class="w-full rounded-lg border border-slate-500 px-3 py-2.5 pr-10 text-sm
                      outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
             />
             <button

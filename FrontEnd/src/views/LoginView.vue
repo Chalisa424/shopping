@@ -1,7 +1,7 @@
 <template>
   <!-- Logo -->
   <div class="flex justify-center mb-6">
-    <img :src="Logo" class="h-30" />
+    <img :src="logo" class="h-30" />
   </div>
 
   <div class="flex items-center justify-center">
@@ -20,7 +20,7 @@
             v-model="form.username"
             type="text"
             placeholder="Enter your username"
-            class="w-full rounded-lg border border-slate-300 px-3 py-2.5 text-sm
+            class="w-full rounded-lg border border-slate-500 px-3 py-2.5 text-sm
                    outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
           />
         </div>
@@ -35,7 +35,7 @@
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
               placeholder="Enter your password"
-              class="w-full rounded-lg border border-slate-300 px-3 py-2.5 pr-10 text-sm
+              class="w-full rounded-lg border border-slate-500 px-3 py-2.5 pr-10 text-sm
                      outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
             />
             <button
@@ -92,7 +92,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { authStore } from '../stores/auth.store'
 import { Icon } from '@iconify/vue'
-import Logo from '../assets/picture/logo.png'
+import logo from '../assets/picture/logo.png'
 import BaseButton from '../components/ฺBaseButton.vue'
 
 const router = useRouter()
