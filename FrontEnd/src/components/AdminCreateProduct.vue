@@ -82,17 +82,17 @@
           />
         </div>
 
-        <!-- URL รูป -->
+        <!-- URL รูป (ไม่บังคับ) -->
         <div>
           <label class="block text-xs font-medium text-slate-600 mb-1">
-            รูปภาพ (Image URL) <span class="text-rose-500">*</span>
+            รูปภาพ (Image URL)
           </label>
           <input
             v-model.trim="form.imageUrl"
             type="text"
             class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm
                    focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none"
-            placeholder=""
+            placeholder="วางลิงก์รูป หรือเว้นว่างหากไม่มี"
           />
         </div>
 
@@ -178,13 +178,15 @@ const handleClose = () => {
 const handleSubmit = async () => {
   submitError.value = null;
 
-  if (!form.value.name || !form.value.imageUrl || !form.value.category) {
-    submitError.value = "กรุณากรอกข้อมูลให้ครบถ้วน (ชื่อ, หมวดหมู่, รูปภาพ)";
+  // ✅ รูปภาพไม่บังคับแล้ว เช็คแค่ name + category + price + stock
+  if (!form.value.name || !form.value.category) {
+    submitError.value = "กรุณากรอกข้อมูลให้ครบถ้วน (ชื่อ, หมวดหมู่)";
     return;
   }
 
   submitting.value = true;
   try {
+    // ส่ง form ตรง ๆ ไปที่ service
     const newProduct = await createProduct(form.value);
     emit("created", newProduct);
     resetForm();
@@ -196,3 +198,4 @@ const handleSubmit = async () => {
   }
 };
 </script>
+

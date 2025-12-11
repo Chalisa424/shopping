@@ -190,7 +190,7 @@ import { Icon } from "@iconify/vue";
 import SearchBar from "../../components/searchBar.vue";
 import pagination from "../../components/pagination.vue";
 import type { ProductModel } from "../../models/product.model";
-import { fetchAdminProducts } from "../../services/products.service";
+import { fetchAdminProducts, deleteProduct} from "../../services/products.service";
 import AdminCreateProduct from "../../components/AdminCreateProduct.vue";
 
 
@@ -273,10 +273,19 @@ const onEditProduct = (product: ProductModel) => {
   alert(`แก้ไขสินค้า: ${product.name} (ยังไม่ได้ทำหน้าแก้ไข)`);
 };
 
-const onDeleteProduct = (product: ProductModel) => {
-  console.log("delete", product);
-  alert(`ลบสินค้า: ${product.name} (ยังไม่ได้ต่อ API ลบ)`);
+const onDeleteProduct = async (product: ProductModel) => {
+  const ok = window.confirm(`ต้องการลบสินค้า "${product.name}" ใช่หรือไม่?`);
+  if (!ok) return;
+
+  try {
+    await deleteProduct(product.id);
+    await loadProducts(searchQuery.value);
+  } catch (e) {
+    console.error(e);
+    alert("ลบสินค้าไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+  }
 };
+
 
 onMounted(() => {
   loadProducts();
