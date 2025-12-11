@@ -187,6 +187,16 @@
       @close="closeEditModal"
       @updated="handleProductUpdated"
     />
+
+        <!-- Popup ยืนยันการลบสินค้า -->
+    <AdminDeleteProduct
+      v-if="showDeleteModal && productToDelete"
+      :product-name="productToDelete.name"
+      :loading="deleting"
+      @cancel="closeDeleteModal"
+      @confirm="handleConfirmDelete"
+    />
+
   </div>
 </template>
 
@@ -200,7 +210,7 @@ import type { ProductModel } from "../../models/product.model";
 import { fetchAdminProducts, deleteProduct} from "../../services/products.service";
 import AdminCreateProduct from "../../components/AdminCreateProduct.vue";
 import AdminEditProduct from "../../components/AdminEditProduct.vue";
-
+import AdminDeleteProduct from "../../components/AdminDeleteProduct.vue";
 
 const products = ref<ProductModel[]>([]);
 const loading = ref(false);
@@ -297,22 +307,39 @@ const handleProductUpdated = (updated: ProductModel) => {
   closeEditModal();
 };
 
-// ปุ่มแก้ไข
-const onEditProduct = (product: ProductModel) => {
-  openEditModal(product);
-};
 
 // ลบสินค้า
-const onDeleteProduct = async (product: ProductModel) => {
-  const ok = window.confirm(`ต้องการลบสินค้า "${product.name}" ใช่หรือไม่?`);
-  if (!ok) return;
+const showDeleteModal = ref(false);
+const deleting = ref(false);
+const productToDelete = ref<ProductModel | null>(null);
 
+// กดไอคอนถังขยะ
+const onDeleteProduct = (product: ProductModel) => {
+  productToDelete.value = product;
+  showDeleteModal.value = true;
+};
+
+// ปิด popup ลบ
+const closeDeleteModal = () => {
+  if (deleting.value) return;
+  showDeleteModal.value = false;
+  productToDelete.value = null;
+};
+
+// ยืนยันลบ
+const handleConfirmDelete = async () => {
+  if (!productToDelete.value) return;
+
+  deleting.value = true;
   try {
-    await deleteProduct(product.id);
-    await loadProducts(searchQuery.value);
+    await deleteProduct(productToDelete.value.id);
+    await loadProducts(searchQuery.value); // reload list
+    closeDeleteModal();
   } catch (e) {
     console.error(e);
     alert("ลบสินค้าไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+  } finally {
+    deleting.value = false;
   }
 };
 
