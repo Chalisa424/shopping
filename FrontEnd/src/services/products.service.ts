@@ -1,5 +1,5 @@
 import httpClient from "./main.service";
-import type { ProductModel, ProductCreate } from "../models/product.model";
+import type { ProductModel, ProductCreate,ProductUpdate } from "../models/product.model";
 
 // รูป default เวลาไม่ใส่ลิงก์
 const DEFAULT_IMAGE_URL =
@@ -38,6 +38,25 @@ export const createProduct = async (
   const res = await httpClient.post("products", body);
   return res.data;
 };
+
+
+// แก้ไขสินค้า
+export const updateProduct = async (
+  id: number,
+  payload: ProductUpdate
+): Promise<ProductModel> => {
+  const res = await httpClient.put(`products/${id}`, {
+    name: payload.name,
+    description: payload.description,
+    price: payload.price,
+    stock: payload.stock,
+    category: payload.category,
+    imageUrl: payload.imageUrl,
+  });
+  return res.data;
+};
+
+// ลบสินค้า
 
 export const deleteProduct = async (id: number): Promise<void> => {
   await httpClient.delete(`products/${id}`); // DELETE /api/products/{id}

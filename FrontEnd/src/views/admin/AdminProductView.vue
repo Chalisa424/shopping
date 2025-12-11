@@ -143,7 +143,7 @@
                     <button
                       type="button"
                       class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-500 hover:bg-amber-100"
-                      @click="onEditProduct(product)"
+                      @click="openEditModal(product)"
                     >
                       <Icon icon="mdi:pencil" width="16" height="16" />
                     </button>
@@ -180,6 +180,13 @@
       @close="closeCreateModal"
       @created="handleProductCreated"
     />
+        <!-- แก้ไขสินค้า -->
+    <AdminEditProduct
+      v-if="showEditModal && editingProduct"
+      :product="editingProduct"
+      @close="closeEditModal"
+      @updated="handleProductUpdated"
+    />
   </div>
 </template>
 
@@ -192,6 +199,7 @@ import pagination from "../../components/pagination.vue";
 import type { ProductModel } from "../../models/product.model";
 import { fetchAdminProducts, deleteProduct} from "../../services/products.service";
 import AdminCreateProduct from "../../components/AdminCreateProduct.vue";
+import AdminEditProduct from "../../components/AdminEditProduct.vue";
 
 
 const products = ref<ProductModel[]>([]);
@@ -251,7 +259,7 @@ const handlePageSizeChange = (size: number) => {
   currentPage.value = 1;
 };
 
-// modal state
+// ------- Create Modal -------
 const showCreateModal = ref(false);
 const openCreateModal = () => {
   showCreateModal.value = true;
@@ -262,17 +270,39 @@ const closeCreateModal = () => {
 
 // สร้างสินค้าใหม่สำเร็จ
 const handleProductCreated = (product: ProductModel) => {
-  // เติมหน้า current หรือจะ reload จาก API ก็ได้
   products.value = [product, ...products.value];
   closeCreateModal();
 };
 
-// ปุ่มแก้ไข / ลบ (ยังไม่ได้ทำ)
-const onEditProduct = (product: ProductModel) => {
-  console.log("edit", product);
-  alert(`แก้ไขสินค้า: ${product.name} (ยังไม่ได้ทำหน้าแก้ไข)`);
+// ------- Edit Modal -------
+const showEditModal = ref(false);
+const editingProduct = ref<ProductModel | null>(null);
+
+const openEditModal = (product: ProductModel) => {
+  editingProduct.value = product;
+  showEditModal.value = true;
 };
 
+const closeEditModal = () => {
+  showEditModal.value = false;
+  editingProduct.value = null;
+};
+
+// หลังจากแก้ไขเสร็จ
+const handleProductUpdated = (updated: ProductModel) => {
+  const index = products.value.findIndex((p) => p.id === updated.id);
+  if (index !== -1) {
+    products.value[index] = updated; 
+  }
+  closeEditModal();
+};
+
+// ปุ่มแก้ไข
+const onEditProduct = (product: ProductModel) => {
+  openEditModal(product);
+};
+
+// ลบสินค้า
 const onDeleteProduct = async (product: ProductModel) => {
   const ok = window.confirm(`ต้องการลบสินค้า "${product.name}" ใช่หรือไม่?`);
   if (!ok) return;
@@ -285,7 +315,6 @@ const onDeleteProduct = async (product: ProductModel) => {
     alert("ลบสินค้าไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
   }
 };
-
 
 onMounted(() => {
   loadProducts();

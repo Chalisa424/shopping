@@ -13,7 +13,7 @@
       </button>
 
       <h2 class="text-lg md:text-xl font-bold text-slate-900 mb-4">
-        เพิ่มสินค้าใหม่
+        แก้ไขสินค้า
       </h2>
 
       <!-- error จากการ save -->
@@ -35,7 +35,6 @@
             type="text"
             class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm
                    focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none"
-            placeholder="เช่น Pikachu"
           />
         </div>
 
@@ -78,11 +77,10 @@
             type="text"
             class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm
                    focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none"
-            placeholder="Pokémon"
           />
         </div>
 
-        <!-- URL รูป (ไม่บังคับ) -->
+        <!-- URL รูป -->
         <div>
           <label class="block text-xs font-medium text-slate-600 mb-1">
             รูปภาพ (Image URL)
@@ -92,7 +90,6 @@
             type="text"
             class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm
                    focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none"
-            placeholder="วางลิงก์รูป หรือเว้นว่างหากไม่มี"
           />
         </div>
 
@@ -106,7 +103,6 @@
             rows="3"
             class="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm
                    focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none resize-none"
-            placeholder="รายละเอียดสินค้า (ไม่บังคับ)"
           ></textarea>
         </div>
 
@@ -125,7 +121,7 @@
             class="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-white shadow hover:bg-emerald-600 disabled:opacity-60 disabled:cursor-not-allowed"
             :disabled="submitting"
           >
-            <span v-if="!submitting">บันทึกสินค้า</span>
+            <span v-if="!submitting">บันทึก</span>
             <span v-else>กำลังบันทึก...</span>
           </button>
         </div>
@@ -135,16 +131,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import type { ProductCreate, ProductModel } from "../models/product.model";
-import { createProduct } from "../services/products.service";
+import { ref, watchEffect } from "vue";
+import type { ProductModel, ProductUpdate } from "../models/product.model";
+import { updateProduct } from "../services/products.service";
+
+const props = defineProps<{
+  product: ProductModel;
+}>();
 
 const emit = defineEmits<{
   (e: "close"): void;
-  (e: "created", product: ProductModel): void;
+  (e: "updated", product: ProductModel): void;
 }>();
 
-const form = ref<ProductCreate>({
+const form = ref<ProductUpdate>({
   name: "",
   description: "",
   price: 0,
@@ -156,21 +156,21 @@ const form = ref<ProductCreate>({
 const submitting = ref(false);
 const submitError = ref<string | null>(null);
 
-const resetForm = () => {
+// เติมค่าเริ่มต้นจาก props.product ทุกครั้งที่เปิด modal
+watchEffect(() => {
+  if (!props.product) return;
   form.value = {
-    name: "",
-    description: "",
-    price: 0,
-    stock: 0,
-    category: "",
-    imageUrl: "",
+    name: props.product.name,
+    description: props.product.description ?? "",
+    price: props.product.price,
+    stock: props.product.stock,
+    category: props.product.category,
+    imageUrl: props.product.imageUrl,
   };
-  submitError.value = null;
-};
+});
 
 const handleClose = () => {
   if (!submitting.value) {
-    resetForm();
     emit("close");
   }
 };
@@ -185,10 +185,8 @@ const handleSubmit = async () => {
 
   submitting.value = true;
   try {
-    // ส่ง form ตรง ๆ ไปที่ service
-    const newProduct = await createProduct(form.value);
-    emit("created", newProduct);
-    resetForm();
+    const updated = await updateProduct(props.product.id, form.value);
+    emit("updated", updated);    //ส่ง product ที่แก้แล้วกลับไปให้หน้า list
   } catch (err) {
     console.error(err);
     submitError.value = "บันทึกสินค้าไม่สำเร็จ กรุณาลองใหม่อีกครั้ง";
@@ -197,4 +195,3 @@ const handleSubmit = async () => {
   }
 };
 </script>
-
