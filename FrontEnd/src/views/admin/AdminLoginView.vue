@@ -1,7 +1,7 @@
 <template>
   <!-- Logo -->
   <div class="flex justify-center mb-6">
-    <img :src="Logo" class="h-30" />
+    <img :src="logo" class="h-30" />
   </div>
 
   <div class="flex items-center justify-center">
@@ -92,7 +92,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { authStore } from '../../stores/auth.store'
 import { Icon } from '@iconify/vue'
-import Logo from '../../assets/picture/logo.png'
+import logo from '../../assets/picture/logo.png'
 import BaseButton from '../../components/ฺBaseButton.vue'
 
 const router = useRouter()

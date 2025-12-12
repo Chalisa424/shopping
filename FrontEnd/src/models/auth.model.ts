@@ -34,7 +34,7 @@ export interface RegisterResponse {
 export interface Me {
     id: number;
     username: string;
-    fullname: string;
+    fullName: string;
     phone: string;
     role: Role;
 }

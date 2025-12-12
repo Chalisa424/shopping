@@ -21,8 +21,7 @@
           <input
             v-model="form.fullName"
             type="text"
-            class="w-full rounded-lg border border-slate-500 px-3 py-2.5 text-sm
-                   outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
+            class="w-full rounded-lg border border-slate-500 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
             placeholder="ชื่อ - นามสกุล"
           />
         </div>
@@ -35,8 +34,7 @@
           <input
             v-model="form.phone"
             type="text"
-            class="w-full rounded-lg border border-slate-500 px-3 py-2.5 text-sm
-                   outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
+            class="w-full rounded-lg border border-slate-500 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
             placeholder="เบอร์โทรศัพท์"
           />
         </div>
@@ -49,8 +47,7 @@
           <input
             v-model="form.username"
             type="text"
-            class="w-full rounded-lg border border-slate-500 px-3 py-2.5 text-sm
-                   outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
+            class="w-full rounded-lg border border-slate-500 px-3 py-2.5 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
             placeholder="ตั้งชื่อผู้ใช้"
           />
         </div>
@@ -64,8 +61,7 @@
             <input
               v-model="form.password"
               :type="showPassword ? 'text' : 'password'"
-              class="w-full rounded-lg border border-slate-500 px-3 py-2.5 pr-10 text-sm
-                     outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
+              class="w-full rounded-lg border border-slate-500 px-3 py-2.5 pr-10 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
               placeholder="รหัสผ่าน"
             />
             <button
@@ -79,12 +75,7 @@
                 width="24"
                 height="24"
               />
-              <Icon
-                v-else
-                icon="mdi:eye-outline"
-                width="24"
-                height="24"
-              />
+              <Icon v-else icon="mdi:eye-outline" width="24" height="24" />
             </button>
           </div>
         </div>
@@ -98,8 +89,7 @@
             <input
               v-model="form.confirmPassword"
               :type="showConfirmPassword ? 'text' : 'password'"
-              class="w-full rounded-lg border border-slate-500 px-3 py-2.5 pr-10 text-sm
-                     outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
+              class="w-full rounded-lg border border-slate-500 px-3 py-2.5 pr-10 text-sm outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-300"
               placeholder="ยืนยันรหัสผ่าน"
             />
             <button
@@ -113,12 +103,7 @@
                 width="24"
                 height="24"
               />
-              <Icon
-                v-else
-                icon="mdi:eye-outline"
-                width="24"
-                height="24"
-              />
+              <Icon v-else icon="mdi:eye-outline" width="24" height="24" />
             </button>
           </div>
         </div>
@@ -136,8 +121,7 @@
         <!-- ลิงก์กลับไปหน้า login -->
         <button
           type="button"
-          class="mt-3 w-full rounded-full border border-emerald-400 py-2.5 text-sm
-                 font-semibold text-emerald-600 hover:bg-emerald-50"
+          class="mt-3 w-full rounded-full border border-emerald-400 py-2.5 text-sm font-semibold text-emerald-600 hover:bg-emerald-50"
         >
           <router-link to="/login">กลับไปหน้าเข้าสู่ระบบ</router-link>
         </button>
@@ -151,23 +135,25 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { Icon } from "@iconify/vue";
 import { register } from "../services/auth.service";
+import type { RegisterRequest } from "../models/auth.model";
 import logo from "../assets/picture/logo.png";
 import BaseButton from "../components/ฺBaseButton.vue";
 
 const router = useRouter();
 
-const form = ref({
+// ฟอร์มให้ type ตรงกับ RegisterRequest
+const form = ref<RegisterRequest>({
   username: "",
-  fullName: "",
-  phone: "",
   password: "",
   confirmPassword: "",
-  role: "USER" as const,
+  fullName: "",
+  phone: "",
+  role: "USER",
 });
 
 const error = ref("");
 
-// toggle สำหรับ password 
+// toggle สำหรับ password
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
@@ -193,12 +179,27 @@ const handleRegister = async () => {
   }
 
   try {
+    //  type RegisterRequest
     await register(form.value);
     alert("สมัครสมาชิกสำเร็จ!");
     router.push("/login");
   } catch (err: any) {
-    error.value =
-      err?.response?.data || "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
+    const data = err?.response?.data;
+
+    // ถ้า backend ส่ง string มา
+    if (typeof data === "string") {
+      error.value = data;
+      return;
+    }
+
+    // ถ้า backend ส่ง validation errors แบบ object
+    const passwordErrors = data?.errors?.Password;
+    if (Array.isArray(passwordErrors) && passwordErrors.length > 0) {
+      error.value = passwordErrors[0]; // เอาอันแรกพอ
+      return;
+    }
+
+    error.value = "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง";
   }
 };
 </script>

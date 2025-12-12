@@ -44,7 +44,7 @@ httpClient.interceptors.response.use(
         }
       }
 
-      return Promise.reject(err.response)
+      return Promise.reject(err)
     }
 
     // network error ไม่มี response
