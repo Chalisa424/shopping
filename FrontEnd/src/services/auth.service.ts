@@ -16,6 +16,3 @@ export const login = async (payload: LoginRequest) =>
 export const register = async (payload: RegisterRequest) =>
     httpClient.post<RegisterResponse>(`/${entity}/register`, payload);
 
-// ดึงข้อมูลผู้ใช้งานหลัง login
-export const getMe = async () =>
-  httpClient.get(`/auth/me`);

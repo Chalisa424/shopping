@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import router from "../router";
 import type { Me, LoginRequest } from "../models/auth.model";
-import { login, getMe } from "../services/auth.service";
+import { login } from "../services/auth.service";
 import { adminLogin as adminLoginApi } from "../services/admin.service";
 import { jwtDecode } from "jwt-decode";
 
@@ -18,14 +18,14 @@ export const authStore = defineStore("auth", {
   //เฉพาะ ตาม role ที่กำหนด
   getters: {
     isAuthenticated: (state) => state.LoggedIn && !!state.user,
-    isAdmin: (state) => 
-      state.user?.role && state.user.role.toLowerCase() === 'admin',
+    isAdmin: (state) =>
+      state.user?.role && state.user.role.toLowerCase() === "admin",
     isUser: (state) =>
-    state.user?.role && state.user.role.toLowerCase() === 'user',
+      state.user?.role && state.user.role.toLowerCase() === "user",
   },
 
   actions: {
-     // user login 
+    // user login
     async login(payload: LoginRequest) {
       try {
         //เรียก api login
@@ -41,13 +41,12 @@ export const authStore = defineStore("auth", {
         this.user = {
           id: decoded.id,
           username: decoded.username,
-          fullname: decoded.fullname,
+          fullName: decoded.fullname,
           phone: decoded.phone,
           role: decoded.role,
         };
 
         this.LoggedIn = true;
-
       } catch (err) {
         console.error(err);
       }
@@ -55,16 +54,16 @@ export const authStore = defineStore("auth", {
 
     // admin login
     async adminLogin(payload: LoginRequest) {
-      try{
+      try {
         const res = await adminLoginApi(payload);
         const token = res.data.token;
 
-        localStorage.setItem("Token",token)
+        localStorage.setItem("Token", token);
         const decoded: any = jwtDecode(token);
         this.user = {
           id: decoded.id,
           username: decoded.username,
-          fullname: decoded.fullname,
+          fullName: decoded.fullname,
           phone: decoded.phone,
           role: decoded.role,
         };
@@ -79,15 +78,33 @@ export const authStore = defineStore("auth", {
     //fetch user ใน store
     async fetchUser() {
       try {
-        const res = await getMe();
-        this.user = res.data;
+        const token = localStorage.getItem("Token");
+
+        if (!token) {
+          this.user = undefined;
+          this.LoggedIn = false;
+          return;
+        }
+
+        const decoded: any = jwtDecode(token);
+
+        this.user = {
+          id: decoded.id,
+          username: decoded.username,
+          fullName: decoded.fullname, // ถ้าใน token เป็น fullname ให้ใช้แบบนี้
+          phone: decoded.phone,
+          role: decoded.role,
+        };
+
         this.LoggedIn = true;
       } catch (err) {
         console.error(err);
+        localStorage.removeItem("Token");
         this.user = undefined;
         this.LoggedIn = false;
       }
     },
+
     //logout
     async logout() {
       localStorage.removeItem("Token");
@@ -99,21 +116,33 @@ export const authStore = defineStore("auth", {
 });
 
 export const fetchUser = async () => {
-    const auth = authStore();
+  const auth = authStore();
 
-    try{
-        const result = await Promise.all([getMe()]);
-        auth.user = result[0].data;
-    }catch (e: any){
-        console.error('Error fetching user data:', e);
+  try {
+    const token = localStorage.getItem("Token");
 
-        if (e.response) {
-            if (e.response.status === 401 || e.response.status === 403) {
-                localStorage.removeItem('Token');
-                auth.LoggedIn = false;
-                auth.user = undefined;
-                router.push({ name: 'LoginView' });
-            }
-        }
+    if (!token) {
+      auth.user = undefined;
+      auth.LoggedIn = false;
+      return;
     }
-}
+
+    const decoded: any = jwtDecode(token);
+
+    auth.user = {
+      id: decoded.id,
+      username: decoded.username,
+      fullName: decoded.fullname,
+      phone: decoded.phone,
+      role: decoded.role,
+    };
+
+    auth.LoggedIn = true;
+  } catch (e: any) {
+    console.error("Error fetching user data:", e);
+    localStorage.removeItem("Token");
+    auth.LoggedIn = false;
+    auth.user = undefined;
+    router.push({ name: "LoginView" });
+  }
+};
