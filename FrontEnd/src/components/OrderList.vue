@@ -82,7 +82,7 @@
         </button>
       </div>
       <!-- แถบปุ่มยืนยัน/ปฏิเสธ -->
-      <div v-if="selectable" class="mt-4">
+      <div v-if="showSelection" class="mt-4">
         <AdminOrderAction
           v-show="selectedIds.length > 0"
           :selected-count="selectedIds.length"
@@ -125,7 +125,7 @@
           <thead class="bg-slate-50 text-slate-500 font-semibold">
             <tr>
               <!--  หัว checkbox -->
-              <th v-if="selectable" class="w-[6%] px-4 py-2 text-center">
+              <th v-if="showSelection" class="w-[6%] px-4 py-2 text-center">
                 <input
                   type="checkbox"
                   class="h-4 w-4 rounded border-slate-300 text-emerald-500"
@@ -175,7 +175,7 @@
               >
                 <!-- checkbox เลือกแถว -->
                 <td
-                  v-if="selectable"
+                  v-if="showSelection"
                   class="w-[6%] px-4 py-2 text-center"
                   @click.stop
                 >
@@ -411,6 +411,12 @@ const allSelected = computed(
     filteredOrders.value.length > 0 &&
     filteredOrders.value.every((o) => selectedIds.value.includes(o.id))
 );
+
+const showSelection = computed(() => {
+  if (!props.selectable) return false;
+
+ return activeStatus.value === "ALL" || activeStatus.value === "PENDING";
+});
 
 const toggleSelect = (id: number) => {
   if (isSelected(id)) {

@@ -1,4 +1,3 @@
-<!-- src/views/admin/AdminOrderView.vue -->
 <template>
   <div class="mx-auto max-w-6xl">
     <!-- ใช้ component กลางสำหรับรายการสั่งซื้อ (เวอร์ชัน Admin) -->
