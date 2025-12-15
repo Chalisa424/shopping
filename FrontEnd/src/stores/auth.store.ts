@@ -18,24 +18,20 @@ export const authStore = defineStore("auth", {
   //เฉพาะ ตาม role ที่กำหนด
   getters: {
     isAuthenticated: (state) => state.LoggedIn && !!state.user,
-    isAdmin: (state) =>
-      state.user?.role && state.user.role.toLowerCase() === "admin",
-    isUser: (state) =>
-      state.user?.role && state.user.role.toLowerCase() === "user",
+    isAdmin: (state) => (state.user?.role ?? "").toLowerCase() === "admin",
+    isUser: (state) => (state.user?.role ?? "").toLowerCase() === "user",
+
   },
 
   actions: {
     // user login
     async login(payload: LoginRequest) {
       try {
-        //เรียก api login
         const res = await login(payload);
         const token = res.data.token;
 
-        //เก็บ token ลง localstorage
         localStorage.setItem("Token", token);
 
-        //decode token เพื่อดึงข้อมูล user
         const decoded: any = jwtDecode(token);
 
         this.user = {
@@ -47,8 +43,13 @@ export const authStore = defineStore("auth", {
         };
 
         this.LoggedIn = true;
+        return;
       } catch (err) {
         console.error(err);
+        this.user = undefined;
+        this.LoggedIn = false;
+        localStorage.removeItem("Token");
+        throw err; 
       }
     },
 
