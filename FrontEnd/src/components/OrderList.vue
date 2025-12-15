@@ -287,6 +287,18 @@
                     >
                       รวมทั้งหมด: ฿{{ order.totalPrice }}
                     </div>
+                    <!-- ปุ่มยกเลิกคำสั่งซื้อ -->
+                    <button
+                      v-if="
+                        !selectable &&
+                        String(order.status).toUpperCase() === 'PENDING'
+                      "
+                      type="button"
+                      class="rounded-lg bg-red-500 px-4 py-2 text-xs font-semibold text-white hover:bg-red-600"
+                      @click.stop="emit('cancel-order', order.id)"
+                    >
+                      ยกเลิกการสั่งซื้อ
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -342,7 +354,7 @@ const props = withDefaults(
     }),
     columnLabels: () => ({
       code: "รหัสการสั่งซื้อ",
-      customer: "", // ฝั่ง user ไม่ใช้ ปล่อยว่างไว้
+      customer: "",
       items: "จำนวนสินค้า",
       total: "ราคารวม",
       status: "สถานะ",
@@ -356,6 +368,7 @@ const emit = defineEmits<{
   (e: "update:selectedIds", value: number[]): void;
   (e: "confirm-selected", ids: number[]): void;
   (e: "reject-selected", ids: number[]): void;
+  (e: "cancel-order", id: number): void;
 }>();
 
 const activeStatus = ref<"ALL" | OrderStatus>("ALL");

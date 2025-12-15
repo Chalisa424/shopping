@@ -23,13 +23,13 @@ export const updateOrderStatus = async (orderId: number, status: string) => {
     apiStatus = "confirm";
   } else if (upper === "REJECTED" || upper === "REJECT") {
     apiStatus = "reject";
+  } else if (upper === "CANCELLED" || upper === "CANCEL") {
+    apiStatus = "cancel"; 
   } else {
-    // กันพลาด เผื่อเผลอส่งค่าอื่นมา
-    console.error("Invalid status for admin change:", status);
-    throw new Error(`Invalid status for admin change: ${status}`);
+    console.error("Invalid status:", status);
+    throw new Error(`Invalid status: ${status}`);
   }
 
-  // ตาม Swagger ต้องส่ง { "status": "confirm" } หรือ { "status": "reject" }
   const res = await httpClient.put(`orders/${orderId}`, {
     status: apiStatus,
   });
@@ -54,3 +54,4 @@ export const createOrder = async (items: CartModel[]) => {
   const res = await httpClient.post("orders", payload); // POST /api/orders
   return res.data; 
 };
+

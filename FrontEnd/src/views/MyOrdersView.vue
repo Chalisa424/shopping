@@ -9,6 +9,7 @@
       :orders="orders"
       :loading="loading"
       :error="error"
+      @cancel-order="handleCancelOrder"
     />
 
     <!-- Popup หลังสั่งซื้อ -->
@@ -22,7 +23,6 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
@@ -33,6 +33,7 @@ import { fetchMyOrders } from "../services/orders.service";
 import OrderSuccessPopup from "../components/OrderSuccessPopup.vue";
 import { authStore } from "../stores/auth.store";
 import OrderListCard from "../components/OrderList.vue";
+import { updateOrderStatus } from "../services/orders.service";
 
 const orders = ref<OrderModel[]>([]);
 const loading = ref(false);
@@ -59,7 +60,7 @@ const mapApiStatus = (apiStatus: string | null | undefined): OrderStatus => {
   return "PENDING";
 };
 
-// ดึง order แล้วคำนวณ field 
+// ดึง order แล้วคำนวณ field
 const loadOrders = async () => {
   loading.value = true;
   error.value = null;
@@ -83,7 +84,7 @@ const loadOrders = async () => {
       return {
         id: o.id,
         orderCode: String(o.id).padStart(6, "0"),
-        status: mapApiStatus(o.status),        
+        status: mapApiStatus(o.status),
         totalItems,
         totalQuantity,
         totalPrice,
@@ -120,4 +121,18 @@ onMounted(async () => {
     showOrderPopup.value = true;
   }
 });
+
+const handleCancelOrder = async (orderId: number) => {
+  try {
+    await updateOrderStatus(orderId, "CANCELLED");
+
+    // อัปเดต status ในหน้าเลย
+    orders.value = orders.value.map((o) =>
+      o.id === orderId ? { ...o, status: "CANCELLED" } : o
+    );
+  } catch (e) {
+    console.error(e);
+    error.value = "ยกเลิกคำสั่งซื้อไม่สำเร็จ";
+  }
+};
 </script>
