@@ -113,6 +113,11 @@
           {{ error }}
         </p>
 
+        <!-- success -->
+        <p v-if="success" class="text-emerald-600 text-center text-sm font-semibold">
+          {{ success }}
+        </p>
+
         <!-- ปุ่มลงทะเบียน -->
         <BaseButton type="submit" class="mt-3 w-full py-2.5">
           ลงทะเบียน
@@ -152,6 +157,7 @@ const form = ref<RegisterRequest>({
 });
 
 const error = ref("");
+const success = ref("");
 
 // toggle สำหรับ password
 const showPassword = ref(false);
@@ -167,6 +173,7 @@ const toggleConfirmPassword = () => {
 
 const handleRegister = async () => {
   error.value = "";
+  success.value = ""; 
 
   if (!form.value.username || !form.value.password) {
     error.value = "กรุณากรอกข้อมูลให้ครบถ้วน";
@@ -179,23 +186,24 @@ const handleRegister = async () => {
   }
 
   try {
-    //  type RegisterRequest
     await register(form.value);
-    alert("สมัครสมาชิกสำเร็จ!");
-    router.push("/login");
+
+    success.value = "สมัครสมาชิกสำเร็จ!";
+
+    setTimeout(() => {
+      router.push("/login");
+    }, 1200);
   } catch (err: any) {
     const data = err?.response?.data;
 
-    // ถ้า backend ส่ง string มา
     if (typeof data === "string") {
       error.value = data;
       return;
     }
 
-    // ถ้า backend ส่ง validation errors แบบ object
     const passwordErrors = data?.errors?.Password;
     if (Array.isArray(passwordErrors) && passwordErrors.length > 0) {
-      error.value = passwordErrors[0]; // เอาอันแรกพอ
+      error.value = passwordErrors[0];
       return;
     }
 
