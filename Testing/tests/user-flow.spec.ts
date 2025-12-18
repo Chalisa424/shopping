@@ -4,6 +4,15 @@ import { ProductListPage} from "../pages/product-list-page";
 import { CartPage} from "../pages/cart-page";
 import { MyOrdersPage } from "../pages/my-orders-page";
 
+//login => เพิ่มสินค้าลงรถเข็น => เข้า cart ลบ 1 รายการ => สั่งสินค้า => ยกเลิกล่าสุด
+test.afterEach(async ({ page }) => {
+  const myOrdersPage = new MyOrdersPage(page);
+
+  await page.goto("/my-orders").catch(() => {});
+
+  await myOrdersPage.cancelLatestOrder().catch(() => {});
+});
+
 test("user flow", async ({ page }) => {
   const loginPage = new LoginPage(page);
   const productListPage = new ProductListPage(page);
@@ -21,15 +30,9 @@ test("user flow", async ({ page }) => {
 
   // cart - เข้า cart + ลบ + สั่งสินค้า
   await productListPage.openCartFromBadge();
-  await cartPage.removeItemByNth(4); 
+  await cartPage.removeItemByNth(4);
   await cartPage.checkout();
 
-  // my orders - เปิดออเดอร์ + ยกเลิก + รอการยืนยัน
-  await myOrdersPage.openOrderRowByName("000019 1 รายการ 1 ชิ้น ฿20");
-  await myOrdersPage.openOrderRowByName("000020 2 รายการ 2 ชิ้น ฿157");
-  await myOrdersPage.openOrderRowByName("000019 1 รายการ 1 ชิ้น ฿20");
-
-  await myOrdersPage.openOrderDetail();
-  await myOrdersPage.cancelOrderInDetail(); 
-
+  //my orders - ยกเลิกล่าสุด (ไม่อ้างเลข order)
+  await myOrdersPage.cancelLatestOrder();
 });

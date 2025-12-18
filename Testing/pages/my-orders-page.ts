@@ -1,23 +1,47 @@
-import { type Page, expect } from "@playwright/test";
+import { type Page, expect, Locator } from "@playwright/test";
 
 export class MyOrdersPage {
   constructor(public page: Page) {}
 
-  async openOrderRowByName(rowName: string) {
-    await this.page.getByRole("row", { name: rowName }).click();
+  private dataRows(): Locator {
+    return this.page.getByRole("rowgroup").nth(1).getByRole("row");
   }
 
-  async openOrderDetail() {
-    await this.page
-      .getByRole("button", { name: "ดูรายละเอียดคำสั่งซื้อ" })
-      .click();
-    await expect(this.page).toHaveURL(/\/my-orders/);
+  private cancellableOrderRow(): Locator {
+    return this.dataRows().filter({ hasText: "รอการยืนยันคำสั่งซื้อ" }).first();
   }
 
-  async cancelOrderInDetail() {
-    const dialog = this.page.getByRole("dialog");
+  async cancelLatestOrder() {
+    const row = this.cancellableOrderRow();
+    await expect(row).toBeVisible();
 
-    await dialog.getByRole("button", { name: "ยกเลิกคำสั่งซื้อ" }).click();
-    await dialog.getByRole("button", { name: "ยืนยันคำสั่งซื้อ" }).click();
+    const orderId = (await row.getByRole("cell").first().innerText()).trim();
+
+    // เปิด detail row
+    await row.click();
+
+    const detailRow = row.locator("xpath=following-sibling::tr[1]");
+    await expect(detailRow).toContainText("รวมทั้งหมด:");
+
+    const cancelBtn = detailRow.getByRole("button", { name: "ยกเลิกการสั่งซื้อ" });
+    await expect(cancelBtn).toBeVisible();
+
+    await Promise.all([
+      this.page.waitForResponse(
+        (res) =>
+          res.url().includes("/api/orders/") &&
+          res.request().method() === "PUT" &&
+          res.ok()
+      ),
+      cancelBtn.click(),
+    ]);
+
+    await this.page.reload();
+
+    const rowAfter = this.dataRows().filter({ hasText: orderId }).first();
+    await expect(rowAfter).toBeVisible();
+    await expect(rowAfter).toContainText("ยกเลิกคำสั่งซื้อ");
+
+    await this.page.waitForTimeout(2000); 
   }
 }

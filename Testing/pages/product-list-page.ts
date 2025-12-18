@@ -9,9 +9,15 @@ export class ProductListPage {
 
   async addToCartByIndex(index: number) {
     await this.page.getByRole("button", { name: "เพิ่มไปยังรถเข็น" }).nth(index).click();
+    await this.page.waitForTimeout(2000); 
+
   }
 
   async openCartFromBadge() {
     await this.page.getByRole("button", { name: "3" }).first().click();
+    await this.page.waitForTimeout(2000); 
+
   }
+
+  
 }
