@@ -329,12 +329,16 @@ const closeDeleteModal = () => {
 // ยืนยันลบ
 const handleConfirmDelete = async () => {
   if (!productToDelete.value) return;
+  if (deleting.value) return; // กันกดซ้ำ
 
   deleting.value = true;
   try {
     await deleteProduct(productToDelete.value.id);
-    await loadProducts(searchQuery.value); // reload list
-    closeDeleteModal();
+
+    showDeleteModal.value = false;
+    productToDelete.value = null;
+
+    await loadProducts(searchQuery.value);
   } catch (e) {
     console.error(e);
     alert("ลบสินค้าไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
